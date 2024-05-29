@@ -1,0 +1,19 @@
+streamlit
+google-generativeai
+python-dotenv
+langchain
+PyPDF2
+faiss-cpu
+langchain_google_genai
+unstructured
+jq
+
+# news_search_scrap.py reguirements
+
+groq
+phidata
+streamlit
+duckduckgo-search 
+nest_asyncio
+newspaper4k
+lxml_html_clean
