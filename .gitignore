@@ -16,3 +16,6 @@ data/
 text.txt
 .DS_Store
 .mypy_cache
+
+src/chroma_db
+src/faiss_index
