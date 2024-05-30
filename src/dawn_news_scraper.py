@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+from phi.tools.newspaper4k import Newspaper4k
 import time
 import json
 
@@ -33,6 +34,21 @@ def dawn_articles_metadata(title):
         list_of_articles.append(dawn_articles_dict)
     return list_of_articles
 
+def get_articles_data(list_of_articles):
+    dawn_news_articles = []
+    newspaper_tool = Newspaper4k()
+    for c, r in enumerate(list_of_articles):
+        article_data = {}
+        if "url" in r:
+            article_data = newspaper_tool.get_article_data(r["url"])
+            article_data['id'] = c
+            article_data['url'] = r["url"]
+            dawn_news_articles.append(article_data)
+            print(article_data)
+            time.sleep(2)
+    print(len(dawn_news_articles))
+    return dawn_news_articles
+
 def dawn_articles_content(list_of_articles, delay): #delay in sec
     for c, article in enumerate(list_of_articles):
         session = requests.session()
@@ -57,6 +73,7 @@ def download_data_json(list_of_articles):
 if __name__ == "__main__":
     title = get_dawn_article_titles("https://www.dawn.com/latest-news")
     list_of_articles = dawn_articles_metadata(title)
-    articles_content_list = dawn_articles_content(list_of_articles, 5)
-    download_data_json(articles_content_list)
+    dawn_news_articles = get_articles_data(list_of_articles)
+    #articles_content_list = dawn_articles_content(list_of_articles, 5)
+    download_data_json(dawn_news_articles)
 

@@ -5,6 +5,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain_community.document_loaders import DirectoryLoader, JSONLoader
+from langchain_chroma import Chroma
 import json
 from dotenv import load_dotenv
 from datetime import datetime, timedelta, date
@@ -76,38 +77,38 @@ def recursivecharacterchunking(docs, chunk_size, chunk_overlap):
 
 def save_embeddings_to_vectorstore(chunks):
     embeddings_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-    vector_store_path = "faiss_index"
+    vector_store_path = "chroma_db"
 
     try:
         # Check if the vector store file exists
-        if os.path.exists(os.path.join(vector_store_path, "index.faiss")):
+        if os.path.isdir(vector_store_path):
             # Load existing vector store
-            vector_store = FAISS.load_local(vector_store_path, embeddings_model, allow_dangerous_deserialization=True)
-            print('Loaded existing vector store with', vector_store.index.ntotal, 'records')
-
-            # Create new vector store from documents
-            current_vector_store = FAISS.from_documents(chunks, embedding=embeddings_model)
-            
-            # Merge new vector store with existing one
-            vector_store.merge_from(current_vector_store)
-            vector_store.save_local(vector_store_path)
-            print('Merged and saved latest docs in vector store', vector_store.index.ntotal, 'records')
+            #vector_store = FAISS.load_local(vector_store_path, embeddings_model, allow_dangerous_deserialization=True)
+            #print('Loaded existing vector store with', vector_store.index.ntotal, 'records')
+            vector_store = Chroma(persist_directory="./chroma_db", embedding_function=embeddings_model)
+            print('Loaded existing vector store with', vector_store._collection.count(), 'records')
+            vector_store.add_documents(chunks)
+            print('New docs added in vectore store', vector_store._collection.count(), 'records')
         else:
             # If vector store file does not exist, create a new one
-            vector_store = FAISS.from_documents(chunks, embedding=embeddings_model)
-            vector_store.save_local(vector_store_path)
-            print('Vector store not found, created new vector store')
+            #vector_store = FAISS.from_documents(chunks, embedding=embeddings_model)
+            #vector_store.save_local(vector_store_path)
+            print('Vector store not found, creating new vector store.......')
+            vector_store = Chroma.from_documents(chunks, embeddings_model, persist_directory="./chroma_db")
+            print('created new vector store with', vector_store._collection.count(), 'records')
     
     except Exception as e:
         print(f"An error occurred: {e}")
 
 if __name__ == '__main__':
-    docs = fetch_json_by_date('../data/dawn_articles') # for custom use parameter date_str="2024-05-26" 
-    #text = clean_combine_text(data)
-    if docs:
-        chunks = recursivecharacterchunking(docs, 500, 100)
-        save_embeddings_to_vectorstore(chunks)
-    else:
-        print('json is not present on specified date')
+    date_list = ["2024-05-23", "2024-05-24", "2024-05-25", "2024-05-26", "2024-05-27", "2024-05-28", "2024-05-29"]
+    for l in date_list:
+        docs = fetch_json_by_date('../data/dawn_articles', l) # for custom use parameter date_str="2024-05-26" 
+        #text = clean_combine_text(data)
+        if docs:
+            chunks = recursivecharacterchunking(docs, 500, 100)
+            save_embeddings_to_vectorstore(chunks)
+        else:
+            print('json is not present on specified date')
     
 

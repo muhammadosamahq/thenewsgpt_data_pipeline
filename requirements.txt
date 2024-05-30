@@ -7,6 +7,7 @@ faiss-cpu
 langchain_google_genai
 unstructured
 jq
+langchain_chroma
 
 # news_search_scrap.py reguirements
 
