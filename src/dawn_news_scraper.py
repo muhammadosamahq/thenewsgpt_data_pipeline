@@ -38,14 +38,16 @@ def get_articles_data(list_of_articles):
     dawn_news_articles = []
     newspaper_tool = Newspaper4k()
     for c, r in enumerate(list_of_articles):
-        article_data = {}
-        if "url" in r:
-            article_data = newspaper_tool.get_article_data(r["url"])
-            article_data['id'] = c
-            article_data['url'] = r["url"]
-            dawn_news_articles.append(article_data)
-            print(article_data)
-            time.sleep(2)
+        try:
+            if "url" in r:
+                article_data = newspaper_tool.get_article_data(r["url"])
+                article_data['id'] = c
+                article_data['url'] = r["url"]
+                dawn_news_articles.append(article_data)
+                print(article_data)
+                time.sleep(5)
+        except:
+            pass
     print(len(dawn_news_articles))
     return dawn_news_articles
 

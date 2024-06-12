@@ -6,8 +6,10 @@ from langchain.prompts import PromptTemplate
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
 from langchain_openai import OpenAI
+from langchain_openai import OpenAIEmbeddings
 from prompt_template import prompt_template
 from dotenv import load_dotenv
 import streamlit as st
@@ -32,7 +34,8 @@ def get_conversational_chain():
     return question_answer_chain
 
 def rag_chain():
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
+    #embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     #db = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
     db = Chroma(persist_directory="./chroma_db", embedding_function=embeddings)
     retriever = db.as_retriever(search_kwargs={"k": 2})
