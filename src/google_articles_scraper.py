@@ -7,7 +7,7 @@ news_articles = []
 article_topic = 'what is latest in pakistan?'
 ddgs = DDGS()
 newspaper_tool = Newspaper4k()
-results=ddgs.text(article_topic, max_results=200)
+results=ddgs.text(article_topic, max_results=2)
 
 for r in results:
     if "href" in r:
