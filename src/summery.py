@@ -1,9 +1,37 @@
 from langchain.chains.summarize import load_summarize_chain
 from langchain_google_genai import GoogleGenerativeAI
+from datetime import datetime, timedelta
+from langchain_community.document_loaders import DirectoryLoader, JSONLoader
+from langchain_openai import ChatOpenAI
+from dotenv import load_dotenv
 import os
 
+load_dotenv()
 
+def get_all_file_paths(directory):
+    file_paths = []
+    for root, _, files in os.walk(directory):
+        for file in files:
+            file_path = os.path.join(root, file)
+            file_paths.append(file_path)
+    return file_paths
 
-llm = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
+def json_load(file_path):
+    loader = JSONLoader(
+                            file_path=file_path,
+                            jq_schema=".[] | .text",
+                            text_content=False
+                            )
+    return loader.load()
 
-chain = load_summarize_chain(llm, chain_type="stuff")
+if __name__ == "__main__":
+    llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0, model_name="gpt-3.5-turbo-1106")
+    #llm = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
+    chain = load_summarize_chain(llm, chain_type="stuff")
+    today_date = datetime.now().strftime("%Y-%m-%d")
+    clusters_path = get_all_file_paths(f".././clusters/business/{today_date}")
+    for c, cluster in enumerate(clusters_path):
+        docs = json_load(cluster)
+        result = chain.invoke(docs)
+        print(result["output_text"])
+    

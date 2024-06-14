@@ -113,7 +113,7 @@ def plot_pca(x0_name, x1_name, cluster_name, method):
 
 
 def save_cluster_to_json(df, cluster_value):
-    columns_to_keep = ['title', 'authors', 'publish_date', 'text_cleaned']
+    columns_to_keep = ['title', 'authors', 'publish_date', 'url', 'text_cleaned']
     rename_columns = {'text_cleaned': 'text'}
 
     today_date = datetime.now().strftime("%Y-%m-%d")
