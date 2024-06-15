@@ -8,6 +8,8 @@ import streamlit as st
 import pandas as pd
 import os
 import re
+import ast # convert string to dict
+import json
 
 load_dotenv()
 
@@ -28,13 +30,36 @@ def json_load(file_path):
     return loader.load()
 
 
+def convert_to_dict(string):
+    # Split the string at the first occurrence of '='
+    parts = string.split('=', 1)
+    
+    # If there are at least two parts, proceed to replace the name before '='
+    if len(parts) == 2:
+        # The part after '='
+        after_equal = parts[1].strip()
+        # Prepend 'data ='
+        modified_string = f"data = {after_equal}"
+    else:
+        # If no '=' found, return the original string
+        modified_string = string
+    
+    # Evaluate the dictionary string to convert it to an actual dictionary
+    data_dict = ast.literal_eval(after_equal)
+    
+    return data_dict
+
 if __name__ == "__main__":
     data_list = []
+    no_of_tables = []
+    rejected = []
+    tables = {}
+
     prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "you are an assisstent to generate then return most relevent tables from given content only if applicable in pandas dataframe",
+            "you are an assisstent to generate then return most relevent tables from given content only if applicable in pandas dataframe as e.g object 1: # heading: give proper headings name if it become lenghty then make it lenghty with data in python dictionary as well as keep all array length equal within single dictionary"
         ),
         ("human", "{input}"),
     ]
@@ -57,11 +82,24 @@ if __name__ == "__main__":
         #data_list.append(result["output_text"])
         #print(result["output_text"])
         r = result.content.split("Table")
-        data_list.append(r)
+        for data in r:
+            try:
+                tables["heading"] = data.split("```")[0]
+                tables["data"] = convert_to_dict(data.split("```")[1].replace("python\n", ""))
+                no_of_tables.append(tables)
+                tables = {}
+            
+            except:
+                rejected.append(r)
+                pass
         
-        print(r)
 
+    with open('sample.json', 'w') as json_file:
+        json.dump(no_of_tables, json_file, indent=4)
+
+    with open('rejeced.json', 'w') as json_file:
+        json.dump(rejected, json_file, indent=4)
     #extracted_code = re.search(r'data = \{.*?pd.DataFrame\(data\)', data_list[0][3], re.DOTALL).group(0)
     #exec(extracted_code)
-    st.write(data_list)
+    st.write(no_of_tables)
     #st.table(df_wage_salary_increase)
