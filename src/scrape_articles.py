@@ -28,6 +28,7 @@ def get_article_content(url_object):
                 if is_yesterday_before_8am(article_data["publish_date"]):
                     print("Article No", c, "is under date range")
                     article_data["url"] = r["url"]
+                    article_data["source"] = r["source"]
                     news_articles.append(article_data)
                     urls.append(r)
                     
