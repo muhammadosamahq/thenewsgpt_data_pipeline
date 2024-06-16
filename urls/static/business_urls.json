@@ -52,5 +52,17 @@
         "source": "thenewsinternational",
         "url": "https://www.thenews.com.pk/latest/category/business",
         "attr": "heading-cat"
+    },
+    {
+        "id": 9,
+        "source": "pakobserver",
+        "url": "https://pakobserver.net/business/",
+        "attr": "jeg_post_title"
+    },
+    {
+        "id": 10,
+        "source": "ary",
+        "url": "https://arynews.tv/category/business/",
+        "attr": "entry-title td-module-title"
     }
 ]

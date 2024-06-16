@@ -1,5 +1,5 @@
 {
-    "summary": "Prime Minister Shehbaz Sharif announced plans to shut down government departments and institutions incurring significant losses, aiming to reduce lavish expenses and promote austerity. He emphasized privatizing loss-making entities and fostering private sector investment. The government has taken steps to reduce inflation and interest rates, and is committed to economic reforms and development, including securing foreign investments and promoting sectors like agriculture and IT.\n\nSindh Chief Minister Murad Ali Shah acknowledged the province's failure to meet growth targets, attributing delays to the caretaker government's budget decisions. The Sindh government plans to focus on completing old development projects and has allocated a significant budget for development, despite challenging circumstances.\n\nThe federal government is pushing retailers to accept credit card payments to aid tax collection and reduce evasion. Non-compliant businesses face penalties and potential closure. The Federal Board of Revenue (FBR) is also considering suspending utilities for non-filers and imposing travel bans to broaden the tax net.\n\nThe federal budget has been criticized for increasing the tax burden on taxpayers and failing to address non-paying sectors. The budget aims to enhance tax collection but has raised concerns about its impact on inflation and economic stability.",
+    "summary": "Prime Minister Shehbaz Sharif announced plans to shut down government departments and institutions incurring significant losses to the national exchequer, aiming to reduce lavish expenses and promote austerity. He emphasized privatizing loss-making entities and fostering private sector investment. The government has taken steps to reduce inflation and interest rates, and is working on securing foreign investments and improving the business environment. Sindh Chief Minister Murad Ali Shah acknowledged the province's failure to meet growth targets and blamed delays on the caretaker government. The Sindh budget focuses on completing old projects, with significant allocations for development. The Federal Board of Revenue (FBR) is pushing for broader tax compliance, including enforcing credit card payments and imposing penalties on non-compliant businesses. The FBR also plans to suspend utilities for non-filers and impose travel bans. The federal budget has faced criticism for increasing the tax burden on taxpayers and failing to address non-paying sectors effectively.",
     "meta_data": [
         {
             "title": "Govt departments causing \u2018billions in losses\u2019 to be shut down: PM Shehbaz",
@@ -80,108 +80,167 @@
         {
             "heading": "1: Government Departments and Institutions",
             "data": {
-                "Department": [
-                    "Pakistan Public Works Department",
-                    "Various Redundant Ministries and Departments"
+                "headings": [
+                    "Department/Institution",
+                    "Action",
+                    "Expected Savings (Billions PKR)"
                 ],
-                "Action": [
-                    "Shut down due to corruption and inefficiency",
-                    "Review and potential closure to save billions"
-                ],
-                "Reason": [
-                    "Infamous for corruption",
-                    "Burden on the country and people"
+                "data": [
+                    [
+                        "Pakistan Public Works Department",
+                        "Closure",
+                        "Not specified"
+                    ],
+                    [
+                        "Redundant Ministries/Departments",
+                        "Closure",
+                        "Billions"
+                    ],
+                    [
+                        "Organizations/Institutions incurring losses",
+                        "Privatization",
+                        "Billions"
+                    ]
                 ]
             }
         },
         {
-            "heading": "2: Sindh Government Budget and Development",
+            "heading": "2: Sindh Government Budget Allocation",
             "data": {
-                "Budget Component": [
-                    "Total Budget",
-                    "Development Allocation",
-                    "Provincial Annual Development Plan (ADP)",
-                    "Public-Private Partnership Mode",
-                    "K-IV Project"
+                "headings": [
+                    "Category",
+                    "Amount (Billion PKR)"
                 ],
-                "Amount (in Rs)": [
-                    "2.24 trillion",
-                    "700 billion",
-                    "380 billion",
-                    "500 billion",
-                    "25 billion"
-                ],
-                "Remarks": [
-                    "Allocated for the fiscal year",
-                    "Allocated for development",
-                    "Part of the development allocation",
-                    "Projects in various stages of execution",
-                    "Federal and Sindh government contributions"
+                "data": [
+                    [
+                        "Total Budget",
+                        "2,240"
+                    ],
+                    [
+                        "Development Budget",
+                        "700"
+                    ],
+                    [
+                        "Provincial Annual Development Plan (ADP)",
+                        "380"
+                    ],
+                    [
+                        "Public-Private Partnership Mode",
+                        "200"
+                    ],
+                    [
+                        "Projects Executed",
+                        "100"
+                    ],
+                    [
+                        "Projects Under Construction",
+                        "80"
+                    ],
+                    [
+                        "Projects in Bidding Stage",
+                        "20"
+                    ]
                 ]
             }
         },
         {
-            "heading": "3: Taxation and Revenue Measures",
+            "heading": "3: Tax Measures and Penalties",
             "data": {
-                "Measure": [
-                    "Suspension of electricity and gas connections for non-filers",
-                    "Shutting down non-filers' businesses",
-                    "Foreign travel ban for non-filers",
-                    "Higher withholding tax rate for non-filers",
-                    "Reduction in salary slab hike tax",
-                    "Withholding tax on cellular and internet bills for non-filers"
+                "headings": [
+                    "Measure",
+                    "Details"
                 ],
-                "Implemented By": [
-                    "Federal Board of Revenue (FBR)",
-                    "Federal Board of Revenue (FBR)",
-                    "Senate Standing Committee on Finance",
-                    "Senate Standing Committee on Finance",
-                    "Senate Standing Committee on Finance",
-                    "Senate Standing Committee on Finance"
-                ],
-                "Purpose": [
-                    "Broaden the tax net",
-                    "Broaden the tax net",
-                    "Broaden the tax net",
-                    "Broaden the tax net",
-                    "Broaden the tax net",
-                    "Broaden the tax net"
+                "data": [
+                    [
+                        "Non-compliant Retailers",
+                        "Closure for not accepting credit card payments"
+                    ],
+                    [
+                        "Receipts Issuance",
+                        "Penalties for not issuing at least 3 receipts per day or 5 per week"
+                    ],
+                    [
+                        "Electricity/Gas Connection Suspension",
+                        "For non-filers"
+                    ],
+                    [
+                        "Foreign Travel Ban",
+                        "For non-filers"
+                    ],
+                    [
+                        "Higher Withholding Tax",
+                        "For non-filers"
+                    ],
+                    [
+                        "Additional Tax on Purchases",
+                        "For temporary filers"
+                    ]
                 ]
             }
         },
         {
-            "heading": "4: New Tax Structure for Vehicles in Sindh",
+            "heading": "4: Vehicle Tax Structure (Sindh)",
             "data": {
-                "Vehicle Type": [
-                    "Imported vehicles (engine capacity 660cc to 1000cc)",
-                    "Imported motor cars and jeeps (engine capacity 1001cc to 1300cc)",
-                    "Imported motor cars and jeeps (engine capacity 1301cc to 1500cc)",
-                    "Imported motor cars and jeeps (engine capacity 1501cc to 2000cc)",
-                    "Locally manufactured/assembled vehicles (engine capacity 660cc to 1000cc)"
+                "headings": [
+                    "Vehicle Type",
+                    "Engine Capacity (cc)",
+                    "Tax Amount (PKR)"
                 ],
-                "Tax Amount (in Rs)": [
-                    "20,000",
-                    "50,000",
-                    "100,000",
-                    "150,000",
-                    "10,000"
+                "data": [
+                    [
+                        "Imported Motor Cars/Jeep",
+                        "Up to 1000",
+                        "50,000"
+                    ],
+                    [
+                        "Imported Motor Cars/Jeep",
+                        "1001-1300",
+                        "100,000"
+                    ],
+                    [
+                        "Imported Motor Cars/Jeep",
+                        "1301-1500",
+                        "150,000"
+                    ],
+                    [
+                        "Imported Motor Cars/Jeep",
+                        "1501-2000",
+                        "200,000"
+                    ],
+                    [
+                        "Imported Motor Cars/Jeep",
+                        "2001-2500",
+                        "300,000"
+                    ],
+                    [
+                        "Locally Manufactured/Assembled Vehicles",
+                        "Up to 1000",
+                        "Not specified"
+                    ],
+                    [
+                        "Locally Manufactured/Assembled Vehicles",
+                        "1001-1300",
+                        "Not specified"
+                    ]
                 ]
             }
         },
         {
-            "heading": "5: Economic Measures and Outcomes",
+            "heading": "5: Federal Budget Overview",
             "data": {
-                "Measure": [
-                    "Reduction in electricity prices for industrial and export sectors",
-                    "Promotion of agriculture sector",
-                    "Training of Pakistani students in China for IT",
-                    "Implementation of new monitoring dashboard for POS systems"
+                "headings": [
+                    "Category",
+                    "Amount (Trillion PKR)"
                 ],
-                "Outcome": [
-                    "Reduce burden by Rs 100 billion",
-                    "Establish new records in exports",
-                    "Enhance IT sector in Pakistan",
-                    "Enhance oversight and accountability"
+                "data": [
+                    [
+                        "Total Outlay",
+                        "14.46"
+                    ],
+                    [
+                        "Deficit",
+                        "7.1"
+                    ]
                 ]
             }
         }

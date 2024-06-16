@@ -53,7 +53,7 @@ if __name__ == "__main__":
     [
         (
             "system",
-            "you are an assisstent to generate then return most relevent tables from given content only if applicable in json objects must be as e.g Object 1: Government Departments and Institutions\n```json\ headings of table must be clear and proper and provide table in a json objects form where All arrays must be of the same length"
+            "you are an assisstent to generate then return most relevent tables from given content of numerical statistics only if applicable in json objects must be as e.g Object 1: Government Departments and Institutions\n```json\ headings of table must be clear and proper and provide table in a json objects form where All arrays must be of the same length"
         ),
         ("human", "{input}"),
     ]
