@@ -38,6 +38,11 @@ def convert_to_dict(string):
     return data_dict
 
 if __name__ == "__main__":
+    today_date = datetime.now().date()
+    directory_path = f'.././summarization/{today_date}/business'
+    if not os.path.exists(f"{directory_path}/summary"):
+        os.makedirs(f"{directory_path}/summary")
+    
     data_list = []
     no_of_tables = []
     tables_data = []
@@ -67,25 +72,36 @@ if __name__ == "__main__":
     clusters_path = get_all_file_paths(f".././clusters/business/{today_date}")
 
     for c, cluster in enumerate(clusters_path):
+        with open(cluster, 'r', encoding='utf-8') as file:
+            meta = json.load(file)
         docs = json_load(cluster)
         result = chain.invoke({"input": docs})
         summarization_result = summarization_chain.invoke(docs)
+        metadata_list = [obj for obj in meta]
+        #len(metadata_list)
+        filename = f'{directory_path}/summary/summary_{c}.json'
+        summery_dict = {"summary": summarization_result["output_text"],
+                        "meta_data": metadata_list}
+        
         data_list.append(summarization_result["output_text"])
         
         st.write(f"**Summary {c}:**", summarization_result["output_text"])
         #print(result["output_text"])
 
-        # with open(f'sample{c}.json', 'w') as json_file:
-        #     json.dump(r, json_file, indent=4) 
+        
         r = result.content.split("Object")
         print(r)
         for c, data in enumerate(r):
+            
             #st.write(data)
             if c == 0:
                 print("first indices")
             else:
                 heading = data.split("```")[0].strip() 
                 d = convert_to_dict(data.split("```")[1].replace("json", "").strip())
+                tables["heading"]= heading
+                tables["data"] = d
+                no_of_tables.append(tables)
                 if "heading" in d.keys():
                     del d["heading"]
                 # Get the maximum length of any array in the data
@@ -94,11 +110,15 @@ if __name__ == "__main__":
                 df = pd.DataFrame.from_dict(my_data)
                 st.write(heading)
                 st.table(df)
-
+                tables = {}
                     
-        # tables_data.extend(no_of_tables)
+        #tables_data.extend(no_of_tables)
         # print(len(tables_data))
- 
+
+        summery_dict["stats"] = no_of_tables
+
+        with open(filename, 'w') as json_file:
+            json.dump(summery_dict, json_file, indent=4) 
 
 
     # for obj in tables_data:
@@ -121,8 +141,7 @@ if __name__ == "__main__":
 
 
 
-    # with open('rejeced.json', 'w') as json_file:
-    #     json.dump(rejected, json_file, indent=4)
+    
     #extracted_code = re.search(r'data = \{.*?pd.DataFrame\(data\)', data_list[0][3], re.DOTALL).group(0)
     #exec(extracted_code)
     #st.write(no_of_tables)
