@@ -48,7 +48,7 @@ if __name__ == "__main__":
     [
         (
             "system",
-            "you are an assisstent to generate then return most relevent tables from given content only if applicable in pandas dataframe as e.g object 1: # heading: headings of table must be clear and proper and and provide table in a dict form where All arrays must be of the same length"
+            "you are an assisstent to generate then return most relevent tables from given content only if applicable in json objects must be as e.g Object 1: Government Departments and Institutions\n```json\ headings of table must be clear and proper and provide table in a json objects form where All arrays must be of the same length"
         ),
         ("human", "{input}"),
     ]
@@ -74,26 +74,30 @@ if __name__ == "__main__":
         
         st.write(f"**Summary {c}:**", summarization_result["output_text"])
         #print(result["output_text"])
-        r = result.content.split("Table")
+
+        # with open(f'sample{c}.json', 'w') as json_file:
+        #     json.dump(r, json_file, indent=4) 
+        r = result.content.split("Object")
+        print(r)
         for c, data in enumerate(r):
+            #st.write(data)
             if c == 0:
-                print(c, data)
+                print("first indices")
             else:
-                try:
-                    tables["id"] = c
-                    tables["heading"] = data.split("```")[0]
-                    tables["data"] = convert_to_dict("{" + data.split("{")[1].split("df")[0])
-                    st.write(data.split("```")[0])
-                    df = pd.DataFrame.from_dict(convert_to_dict("{" + data.split("{")[1].split("df")[0]))
-                    df = df.drop_duplicates()
-                    st.table(df)
-                    no_of_tables.append(tables)
-                    tables = {}
-                
-                except:
-                    pass
-        tables_data.extend(no_of_tables)
-        print(len(tables_data))
+                heading = data.split("```")[0].strip() 
+                d = convert_to_dict(data.split("```")[1].replace("json", "").strip())
+                if "heading" in d.keys():
+                    del d["heading"]
+                # Get the maximum length of any array in the data
+                my_data = dict([ (k, pd.Series(v)) for k,v in d.items() ])
+                # Create a DataFrame with column names set to the keys
+                df = pd.DataFrame.from_dict(my_data)
+                st.write(heading)
+                st.table(df)
+
+                    
+        # tables_data.extend(no_of_tables)
+        # print(len(tables_data))
  
 
 
@@ -106,8 +110,7 @@ if __name__ == "__main__":
     # df = pd.DataFrame.from_dict(t["data"])
     # df = df.drop_duplicates()
     # st.table(df)
-    # with open('sample.json', 'w') as json_file:
-    #     json.dump(tables_data, json_file, indent=4)   
+      
     
     # for t in no_of_tables:
   
