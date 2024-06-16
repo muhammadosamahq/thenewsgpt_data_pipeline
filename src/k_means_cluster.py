@@ -42,7 +42,7 @@ def fetch_today_file(directory):
     today_date = datetime.now().strftime("%Y-%m-%d")
 
     # Construct the expected filename pattern
-    expected_filename = f"business_articles_{today_date}.json"
+    expected_filename = f"all_business_articles_{today_date}.json"
 
     # List all files in the directory
     files = os.listdir(directory)

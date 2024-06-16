@@ -53,6 +53,7 @@ if __name__ == "__main__":
     newspaper_tool = Newspaper4k()
     urls: list = []
     all_urls: list = []
+    counter = 0
     current_date = datetime.now()
     yesterday = (current_date - timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=timezone(timedelta(hours=5)))
     
@@ -69,25 +70,29 @@ if __name__ == "__main__":
                     urls = get_urls_pagination(html, object["attr"])
                     urls = filtered_urls(urls)
                     for url in urls:
+                        counter = counter + 1
                         article_data = newspaper_tool.get_article_data(url)
                         given_date = datetime.fromisoformat(article_data["publish_date"])
                         if  given_date >= yesterday:
-                            article_data["id"] = c
+                            article_data["id"] = counter
                             article_data["url"] = url
                             article_data["source"] = object["source"]
                             list_of_articles.append(article_data)
+                            print("fetching...", article_data["id"])
                         time.sleep(5)
                 else:
                     urls = get_all_urls(html, object["attr"])
                     urls = filtered_urls(urls)    
                     for url in urls:
+                        counter = counter + 1
                         article_data = newspaper_tool.get_article_data(url)
                         given_date = datetime.fromisoformat(article_data["publish_date"])
                         if  given_date >= yesterday:
-                            article_data["id"] = c
+                            article_data["id"] = counter 
                             article_data["url"] = url
                             article_data["source"] = object["source"]
                             list_of_articles.append(article_data)
+                            print("fetching...", article_data["id"])
                         time.sleep(5)
 
             except:

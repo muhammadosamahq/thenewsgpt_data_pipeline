@@ -34,5 +34,23 @@
         "source": "dunya",
         "url": "https://dunyanews.tv/en/Business",
         "attr": "media__title media__title--threelines"
+    },
+    {
+        "id": 6,
+        "source": "businessrecorder",
+        "url": "https://www.brecorder.com/business-finance",
+        "attr": "story"
+    },
+    {
+        "id": 7,
+        "source": "profit.pakistantoday",
+        "url": "https://profit.pakistantoday.com.pk/category/top-news-updates/",
+        "attr": "entry-title td-module-title"
+    },
+    {
+        "id": 8,
+        "source": "thenewsinternational",
+        "url": "https://www.thenews.com.pk/latest/category/business",
+        "attr": "heading-cat"
     }
 ]
