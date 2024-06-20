@@ -122,10 +122,11 @@ def save_cluster_to_json(df, cluster_value):
 
     json_data = df_cluster.to_json(orient='records', indent=4)
 
-    directory_path = f'.././clusters/business/{today_date}'
+    directory_path = f'.././data/{today_date}/business/clusters'
     filename = f'{directory_path}/cluster_{cluster_value}_records.json'
     
-    os.makedirs(directory_path, exist_ok=True)
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path, exist_ok=True)
 
     with open(filename, 'w') as file:
         file.write(json_data)
@@ -133,8 +134,8 @@ def save_cluster_to_json(df, cluster_value):
     print(f"Data saved to {filename}")
 
 if __name__ == "__main__":
-    
-    today_file_path = fetch_today_file(".././data/business")
+    today_date = datetime.now().strftime("%Y-%m-%d")
+    today_file_path = fetch_today_file(f".././data/{today_date}/business/articles")
     df = pd.read_json(today_file_path)
     df['text_cleaned'] = df['text'].apply(lambda text: preprocess_text(text))
     df = df[df['text_cleaned'] != '']

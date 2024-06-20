@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from phi.tools.newspaper4k import Newspaper4k
 import time
 import json
+import os
 
 articles_json: dict[str:str] = {}
 list_of_articles: list[dict[str:str]] = []
@@ -70,10 +71,10 @@ if __name__ == "__main__":
     all_urls: list = []
     counter = 0
     current_date = datetime.now()
-    yesterday = (current_date - timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=timezone(timedelta(hours=5)))
-    
+    yesterday_5 = (current_date - timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=timezone(timedelta(hours=5)))
+    yesterday = (current_date - timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0)
 
-    with open(".././urls/static/business_urls.json", 'r') as file:
+    with open(".././urls/business_urls.json", 'r') as file:
         data = json.load(file)
 
     for c, object in enumerate(data):
@@ -81,33 +82,43 @@ if __name__ == "__main__":
         print(object["source"])
         if status == 200:
             try:
-                if object["source"] == "propakistani":
-                    urls = get_urls_pagination(html, object["attr"])
-                    urls = filtered_urls(urls)
-                    for url in urls:
-                        counter = counter + 1
-                        article_data = newspaper_tool.get_article_data(url)
-                        given_date = datetime.fromisoformat(article_data["publish_date"])
-                        if  given_date >= yesterday:
-                            article_data["id"] = counter
-                            article_data["url"] = url
-                            article_data["source"] = object["source"]
-                            list_of_articles.append(article_data)
-                            print("fetching...", counter)
-                        time.sleep(5)
-                else:
+                # if object["source"] == "propakistani":
+                #     urls = get_urls_pagination(html, object["attr"])
+                #     urls = filtered_urls(urls)
+                #     for url in urls:
+                #         counter = counter + 1
+                #         article_data = newspaper_tool.get_article_data(url)
+                #         given_date = datetime.fromisoformat(article_data["publish_date"])
+                #         if  given_date >= yesterday:
+                #             article_data["id"] = counter
+                #             article_data["url"] = url
+                #             article_data["source"] = object["source"]
+                #             list_of_articles.append(article_data)
+                #             print("fetching...", counter)
+                #         time.sleep(5)
+               # else:
+                if object["source"] == "ary":
                     urls = get_all_urls(html, object["attr"])
                     urls = filtered_urls(urls)    
                     for url in urls:
-                        counter = counter + 1
                         article_data = newspaper_tool.get_article_data(url)
                         given_date = datetime.fromisoformat(article_data["publish_date"])
-                        if  given_date >= yesterday:
-                            article_data["id"] = counter 
-                            article_data["url"] = url
-                            article_data["source"] = object["source"]
-                            list_of_articles.append(article_data)
-                            print("fetching...", counter)
+                        if "+05:00" not in str(given_date):
+                            if  given_date >= yesterday:
+                                counter = counter + 1
+                                article_data["id"] = counter 
+                                article_data["url"] = url
+                                article_data["source"] = object["source"]
+                                list_of_articles.append(article_data)
+                                print("fetching...", counter)
+                        else:
+                            if  given_date >= yesterday_5:
+                                counter = counter + 1
+                                article_data["id"] = counter 
+                                article_data["url"] = url
+                                article_data["source"] = object["source"]
+                                list_of_articles.append(article_data)
+                                print("fetching...", counter)
                         time.sleep(5)
 
             except:
@@ -118,6 +129,11 @@ if __name__ == "__main__":
 
             # print(len(all_urls))
 
-    with open(f'.././data/business/all_business_articles_{datetime.now().date()}.json', 'w') as json_file:
+    today_date = datetime.now().strftime("%Y-%m-%d")
+    directory_path = f".././data/{today_date}/business/articles"
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path, exist_ok=True)
+
+    with open(f'.././data/{today_date}/business/articles/all_business_articles_{datetime.now().date()}.json', 'w') as json_file:
         json.dump(list_of_articles, json_file, indent=4)
 

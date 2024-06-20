@@ -38,9 +38,9 @@ def convert_to_dict(string):
 
 if __name__ == "__main__":
     today_date = datetime.now().date()
-    directory_path = f'.././summarization/{today_date}/business'
-    if not os.path.exists(f"{directory_path}/summary"):
-        os.makedirs(f"{directory_path}/summary")
+    directory_path = f'.././data/{today_date}/business/summary'
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
     
     data_list = []
     no_of_tables = []
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     #st.header("A bot for latest Pakistani news💁")
 
     today_date = datetime.now().strftime("%Y-%m-%d")
-    clusters_path = get_all_file_paths(f".././clusters/business/{today_date}")
+    clusters_path = get_all_file_paths(f".././data/{today_date}/business/clusters")
 
     for c, cluster in enumerate(clusters_path):
         with open(cluster, 'r', encoding='utf-8') as file:
@@ -79,7 +79,7 @@ if __name__ == "__main__":
         summarization_result = summarization_chain.invoke(docs)
         metadata_list = [obj for obj in meta]
         #len(metadata_list)
-        filename = f'{directory_path}/summary/summary_{c}.json'
+        filename = f'{directory_path}/summary_{c}.json'
         summery_dict = {"summary": summarization_result["output_text"],
                         "meta_data": metadata_list}
         

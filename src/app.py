@@ -3,6 +3,7 @@ import os
 import json
 import pandas as pd
 import streamlit as st
+import time
 
 def get_all_file_paths(directory):
     file_paths = []
@@ -17,7 +18,7 @@ if __name__ == "__main__":
     st.set_page_config(page_title="News Summary", page_icon="💁")
     st.header("A bot for latest Pakistani news💁")
     today_date = datetime.now().strftime("%Y-%m-%d")
-    summaries_path = get_all_file_paths(f".././summarization/{today_date}/business/summary")
+    summaries_path = get_all_file_paths(f".././data/{today_date}/business/summary")
 
 
     for c, cluster in enumerate(summaries_path):
@@ -48,6 +49,11 @@ if __name__ == "__main__":
                         rows = obj["data"]["data"]
                         df = pd.DataFrame(rows, columns=headings)
                         st.table(df)
+                    elif "Headings" and "Data" in obj["data"].keys():
+                        headings = obj["data"]["Headings"]
+                        rows = obj["data"]["Data"]
+                        df = pd.DataFrame(rows, columns=headings)
+                        st.table(df)
                     else:
                         df = pd.DataFrame.from_dict(obj["data"])
                         st.table(df)
@@ -64,7 +70,7 @@ if __name__ == "__main__":
                         st.table(df)
                     
 
-                    
+        time.delay(5)
 
 
                    
