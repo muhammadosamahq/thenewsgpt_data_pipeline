@@ -6,7 +6,6 @@ from langchain_google_genai import GoogleGenerativeAI
 from langchain.chains.summarize import load_summarize_chain
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-import streamlit as st
 import pandas as pd
 import os
 import re
@@ -59,14 +58,15 @@ if __name__ == "__main__":
     ]
 )
 
+
     
-    llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0, model_name="gpt-4o-2024-05-13")
+    llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0, model_name="gpt-4-turbo")
     #llm = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
     summarization_chain = load_summarize_chain(llm, chain_type="stuff")
     chain = prompt | llm
 
-    st.set_page_config(page_title="News Summary", page_icon="💁")
-    st.header("A bot for latest Pakistani news💁")
+    #st.set_page_config(page_title="News Summary", page_icon="💁")
+    #st.header("A bot for latest Pakistani news💁")
 
     today_date = datetime.now().strftime("%Y-%m-%d")
     clusters_path = get_all_file_paths(f".././clusters/business/{today_date}")
@@ -85,7 +85,7 @@ if __name__ == "__main__":
         
         data_list.append(summarization_result["output_text"])
         
-        st.write(f"**Summary {c}:**", summarization_result["output_text"])
+        #st.write(f"**Summary {c}:**", summarization_result["output_text"])
         #print(result["output_text"])
 
         
@@ -108,15 +108,16 @@ if __name__ == "__main__":
                 my_data = dict([ (k, pd.Series(v)) for k,v in d.items() ])
                 # Create a DataFrame with column names set to the keys
                 df = pd.DataFrame.from_dict(my_data)
-                st.write(heading)
-                st.table(df)
+                #st.write(heading)
+                #st.table(df)
                 tables = {}
                     
         #tables_data.extend(no_of_tables)
         # print(len(tables_data))
 
         summery_dict["stats"] = no_of_tables
-
+        no_of_tables = []
+        
         with open(filename, 'w') as json_file:
             json.dump(summery_dict, json_file, indent=4) 
 
