@@ -7,7 +7,7 @@ env/
 build/
 *.egg-info/
 __pycache__/
-data/
+data
 
 # File formats
 *.pyc
