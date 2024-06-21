@@ -1,0 +1,56 @@
+[
+    {
+        "id": 0,
+        "source": "dawn",
+        "url": "https://www.dawn.com/pakistan",
+        "attr": "story"
+    },
+    {
+        "id": 1,
+        "source": "geo",
+        "url": "https://www.geo.tv/category/pakistan",
+        "attr": "border-box"
+    },
+    {
+        "id": 2,
+        "source": "propakistani",
+        "url": "https://propakistani.pk/category/others/",
+        "attr": "entry-title"
+    },
+    {
+        "id": 3,
+        "source": "dailypakistan",
+        "url": "https://en.dailypakistan.com.pk/pakistan",
+        "attr": "tt-post type-2"
+    },
+    {
+        "id": 4,
+        "source": "aaj",
+        "url": "https://english.aaj.tv/pakistan",
+        "attr": "story"
+    },
+    {
+        "id": 5,
+        "source": "dunya",
+        "url": "https://dunyanews.tv/en/Pakistan",
+        "attr": "media__title media__title--threelines"
+    },
+    {
+        "id": 6,
+        "source": "thenewsinternational",
+        "url": "https://www.thenews.com.pk/latest/category/national",
+        "attr": "writter-list-item-story"
+    },
+    {
+        "id": 7,
+        "source": "pakobserver",
+        "url": "https://pakobserver.net/pakistan/",
+        "attr": "jeg_post_title"
+    },
+    {
+        "id": 8,
+        "source": "ary",
+        "url": "https://arynews.tv/category/pakistan",
+        "attr": "entry-title td-module-title"
+    }
+]

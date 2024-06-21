@@ -38,10 +38,11 @@ prompt = ChatPromptTemplate.from_messages(
         (
             "system",
             '''Extract all statistical data from the given text and present it in JSON format. Ensure that all arrays in the JSON are of the same length and that the JSON keys have consistent and standardized headings. Use the following structure for the JSON output: {{
-    "object": "title of the object"
+    "object": "comprehensive and clear title of the object"
     "headings": [], 
-    "data": [],
+    "data": [] ,
 
+    keep column names identical
     return all json objects in a list named all_json_object_list = []
 
     if there is no statistical data in given text then return None
@@ -73,67 +74,4 @@ for c, cluster in enumerate(clusters_path):
     with open(f'.././data/{today_date}/business/stats/stats_{c}.json', 'w', encoding='utf-8') as file:
         json.dump(all_json_objects_list, file, ensure_ascii=False, indent=4)
     
-    print("Data has been successfully saved to the existing JSON file.")
-
-
-        #st.write(f"**Summary {c}:**", summarization_result["output_text"])
-        #print(result["output_text"])
-
-        
-        # r = result.content.split("Object")
-        # print(r)
-        # for c, data in enumerate(r):
-            
-        #     #st.write(data)
-        #     if c == 0:
-        #         print("first indices")
-        #     else:
-        #         heading = data.split("```")[0].strip() 
-        #         d = convert_to_dict(data.split("```")[1].replace("json", "").strip())
-        #         tables["heading"]= heading
-        #         tables["data"] = d
-        #         no_of_tables.append(tables)
-        #         if "heading" in d.keys():
-        #             del d["heading"]
-        #         # Get the maximum length of any array in the data
-        #         my_data = dict([ (k, pd.Series(v)) for k,v in d.items() ])
-        #         # Create a DataFrame with column names set to the keys
-        #         df = pd.DataFrame.from_dict(my_data)
-        #         #st.write(heading)
-        #         #st.table(df)
-        #         tables = {}
-                    
-        # #tables_data.extend(no_of_tables)
-        # # print(len(tables_data))
-
-        # summery_dict["stats"] = no_of_tables
-        # no_of_tables = []
-        
-        
-
-
-    # for obj in tables_data:
-    #     st.write(obj["heading"])
-    #     df = pd.DataFrame.from_dict(obj["data"])
-    #     df = df.drop_duplicates()
-    #     st.table(df)
-    # st.write(tables["heading"])
-    # df = pd.DataFrame.from_dict(t["data"])
-    # df = df.drop_duplicates()
-    # st.table(df)
-      
-    
-    # for t in no_of_tables:
-  
-    #     st.write(t["heading"])
-    #     df = pd.DataFrame.from_dict(t["data"])
-    #     df = df.drop_duplicates()
-    #     st.table(df)
-
-
-
-    
-    #extracted_code = re.search(r'data = \{.*?pd.DataFrame\(data\)', data_list[0][3], re.DOTALL).group(0)
-    #exec(extracted_code)
-    #st.write(no_of_tables)
-    #st.table(df_wage_salary_increase)
+    print("Data has been successfully saved to the stats folder as JSON file.")

@@ -58,6 +58,7 @@ def get_all_urls(soup, attr):
 def filtered_urls(urls):
     print(len(urls))
     filtered_urls = list(map(lambda url: url.replace("/index.php", "https://dunyanews.tv"), urls))
+    filtered_urls = list(map(lambda url: url.replace("/index.php/en/", "https://dunyanews.tv"), urls))
     filtered_urls = list(filter(lambda url: url.startswith("https://"), filtered_urls))
     print(len(filtered_urls))
     return filtered_urls

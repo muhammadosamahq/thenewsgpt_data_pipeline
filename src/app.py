@@ -14,16 +14,22 @@ def get_all_file_paths(directory):
     return file_paths
 
 if __name__ == "__main__":
+    c = 0
     meta_data_list = []
     st.set_page_config(page_title="News Summary", page_icon="💁")
     st.header("A bot for latest Pakistani news💁")
     today_date = datetime.now().strftime("%Y-%m-%d")
     summaries_path = get_all_file_paths(f".././data/{today_date}/business/summary")
+    stats_path = get_all_file_paths(f".././data/{today_date}/business/stats")
 
 
-    for c, cluster in enumerate(summaries_path):
+    for cluster, stats in zip(summaries_path, stats_path):
         with open(cluster, 'r', encoding='utf-8') as file:
             summary = json.load(file)
+        with open(stats, 'r', encoding='utf-8') as file:
+            statistics = json.load(file)
+        
+        c = c + 1
         st.write(f"***Summary {c}:***", summary["summary"])
         for meta in summary["meta_data"]:
             filtered_meta_data = {key: value for key, value in meta.items() if key != "text"}
@@ -31,6 +37,12 @@ if __name__ == "__main__":
         
         st.write(meta_data_list)
         meta_data_list = []
+        for s in statistics["all_json_object_list"]:
+            st.write(s["object"])
+            headings = s["headings"]
+            rows = s["data"]
+            df = pd.DataFrame(rows, columns=headings)
+            st.table(df)
         # for obj in summary["stats"]:
         #     if obj:
         #         st.write(obj["heading"])
