@@ -71,8 +71,8 @@ if __name__ == "__main__":
     all_urls: list = []
     counter = 0
     current_date = datetime.now()
-    yesterday_5 = (current_date - timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=timezone(timedelta(hours=5)))
-    yesterday = (current_date - timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0)
+    #yesterday_5 = (current_date - timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=timezone(timedelta(hours=5)))
+    yesterday = (current_date - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
 
     with open(".././urls/business_urls.json", 'r') as file:
         data = json.load(file)
@@ -97,29 +97,20 @@ if __name__ == "__main__":
                 #             print("fetching...", counter)
                 #         time.sleep(5)
                # else:
-                if object["source"] == "ary":
-                    urls = get_all_urls(html, object["attr"])
-                    urls = filtered_urls(urls)    
-                    for url in urls:
-                        article_data = newspaper_tool.get_article_data(url)
-                        given_date = datetime.fromisoformat(article_data["publish_date"])
-                        if "+05:00" not in str(given_date):
-                            if  given_date >= yesterday:
-                                counter = counter + 1
-                                article_data["id"] = counter 
-                                article_data["url"] = url
-                                article_data["source"] = object["source"]
-                                list_of_articles.append(article_data)
-                                print("fetching...", counter)
-                        else:
-                            if  given_date >= yesterday_5:
-                                counter = counter + 1
-                                article_data["id"] = counter 
-                                article_data["url"] = url
-                                article_data["source"] = object["source"]
-                                list_of_articles.append(article_data)
-                                print("fetching...", counter)
-                        time.sleep(5)
+                urls = get_all_urls(html, object["attr"])
+                urls = filtered_urls(urls)    
+                for url in urls:
+                    article_data = newspaper_tool.get_article_data(url)
+                    given_date = datetime.fromisoformat(article_data["publish_date"])
+                    given_date_filtered = datetime.strptime(str(given_date).split("+")[0], "%Y-%m-%d %H:%M:%S")
+                    if  given_date_filtered >= yesterday:
+                        counter = counter + 1
+                        article_data["id"] = counter 
+                        article_data["url"] = url
+                        article_data["source"] = object["source"]
+                        list_of_articles.append(article_data)
+                        print("fetching...", counter)
+                    time.sleep(5)
 
             except:
                 pass

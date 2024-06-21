@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
 
     
-    llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0, model_name="gpt-4-turbo")
+    llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0, model_name="gpt-4")
     #llm = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
     summarization_chain = load_summarize_chain(llm, chain_type="stuff")
     chain = prompt | llm
