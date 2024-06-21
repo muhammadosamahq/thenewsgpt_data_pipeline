@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
 
     
-    llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0, model_name="gpt-4")
+    llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0, model_name="gpt-4o")
     #llm = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
     summarization_chain = load_summarize_chain(llm, chain_type="stuff")
     chain = prompt | llm
@@ -75,7 +75,7 @@ if __name__ == "__main__":
         with open(cluster, 'r', encoding='utf-8') as file:
             meta = json.load(file)
         docs = json_load(cluster)
-        result = chain.invoke({"input": docs})
+        #result = chain.invoke({"input": docs})
         summarization_result = summarization_chain.invoke(docs)
         metadata_list = [obj for obj in meta]
         #len(metadata_list)
@@ -84,42 +84,44 @@ if __name__ == "__main__":
                         "meta_data": metadata_list}
         
         data_list.append(summarization_result["output_text"])
+
+        with open(filename, 'w') as json_file:
+            json.dump(summery_dict, json_file, indent=4) 
         
         #st.write(f"**Summary {c}:**", summarization_result["output_text"])
         #print(result["output_text"])
 
         
-        r = result.content.split("Object")
-        print(r)
-        for c, data in enumerate(r):
+        # r = result.content.split("Object")
+        # print(r)
+        # for c, data in enumerate(r):
             
-            #st.write(data)
-            if c == 0:
-                print("first indices")
-            else:
-                heading = data.split("```")[0].strip() 
-                d = convert_to_dict(data.split("```")[1].replace("json", "").strip())
-                tables["heading"]= heading
-                tables["data"] = d
-                no_of_tables.append(tables)
-                if "heading" in d.keys():
-                    del d["heading"]
-                # Get the maximum length of any array in the data
-                my_data = dict([ (k, pd.Series(v)) for k,v in d.items() ])
-                # Create a DataFrame with column names set to the keys
-                df = pd.DataFrame.from_dict(my_data)
-                #st.write(heading)
-                #st.table(df)
-                tables = {}
+        #     #st.write(data)
+        #     if c == 0:
+        #         print("first indices")
+        #     else:
+        #         heading = data.split("```")[0].strip() 
+        #         d = convert_to_dict(data.split("```")[1].replace("json", "").strip())
+        #         tables["heading"]= heading
+        #         tables["data"] = d
+        #         no_of_tables.append(tables)
+        #         if "heading" in d.keys():
+        #             del d["heading"]
+        #         # Get the maximum length of any array in the data
+        #         my_data = dict([ (k, pd.Series(v)) for k,v in d.items() ])
+        #         # Create a DataFrame with column names set to the keys
+        #         df = pd.DataFrame.from_dict(my_data)
+        #         #st.write(heading)
+        #         #st.table(df)
+        #         tables = {}
                     
-        #tables_data.extend(no_of_tables)
-        # print(len(tables_data))
+        # #tables_data.extend(no_of_tables)
+        # # print(len(tables_data))
 
-        summery_dict["stats"] = no_of_tables
-        no_of_tables = []
+        # summery_dict["stats"] = no_of_tables
+        # no_of_tables = []
         
-        with open(filename, 'w') as json_file:
-            json.dump(summery_dict, json_file, indent=4) 
+        
 
 
     # for obj in tables_data:

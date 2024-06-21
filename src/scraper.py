@@ -66,6 +66,11 @@ def filtered_urls(urls):
     return filtered_urls
 
 if __name__ == "__main__":
+    today_date = datetime.now().strftime("%Y-%m-%d")
+    directory_path = f".././data/{today_date}/business/articles"
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path, exist_ok=True)
+
     newspaper_tool = Newspaper4k()
     urls: list = []
     all_urls: list = []
@@ -108,6 +113,8 @@ if __name__ == "__main__":
                         article_data["id"] = counter 
                         article_data["url"] = url
                         article_data["source"] = object["source"]
+                        with open(f'.././data/{today_date}/business/articles/business_article_{counter}_{object["source"]}.json', 'w') as json_file:
+                            json.dump(article_data, json_file, indent=4)
                         list_of_articles.append(article_data)
                         print("fetching...", counter)
                     time.sleep(5)
@@ -120,11 +127,7 @@ if __name__ == "__main__":
 
             # print(len(all_urls))
 
-    today_date = datetime.now().strftime("%Y-%m-%d")
-    directory_path = f".././data/{today_date}/business/articles"
-    if not os.path.exists(directory_path):
-        os.makedirs(directory_path, exist_ok=True)
+    
 
-    with open(f'.././data/{today_date}/business/articles/all_business_articles_{datetime.now().date()}.json', 'w') as json_file:
-        json.dump(list_of_articles, json_file, indent=4)
+    
 

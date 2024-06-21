@@ -37,23 +37,48 @@ def preprocess_text(text: str) -> str:
 
     return text
 
-def fetch_today_file(directory):
-    # Get today's date in YYYY-MM-DD format
-    today_date = datetime.now().strftime("%Y-%m-%d")
+# def fetch_today_file(directory):
+#     # Get today's date in YYYY-MM-DD format
+#     today_date = datetime.now().strftime("%Y-%m-%d")
 
-    # Construct the expected filename pattern
-    expected_filename = f"all_business_articles_{today_date}.json"
+#     # Construct the expected filename pattern
+#     expected_filename = f"all_business_articles_{today_date}.json"
 
+#     # List all files in the directory
+#     files = os.listdir(directory)
+
+#     # Find the file that matches today's date
+#     for file in files:
+#         if file == expected_filename:
+#             return os.path.join(directory, file)
+
+#     return None  # Return None if today's file is not found
+
+def fetch_and_merge_json_files(directory):
     # List all files in the directory
     files = os.listdir(directory)
 
-    # Find the file that matches today's date
+    # Initialize an empty list to hold the merged JSON objects
+    merged_data = []
+
+    # Iterate through each file in the directory
     for file in files:
-        if file == expected_filename:
-            return os.path.join(directory, file)
+        if file.endswith('.json'):
+            # Construct the full file path
+            file_path = os.path.join(directory, file)
+            
+            # Open and read the JSON file
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+                
+                # If the data is a list, extend the merged_data list
+                if isinstance(data, list):
+                    merged_data.extend(data)
+                else:
+                    # If the data is a single object, append it to the merged_data list
+                    merged_data.append(data)
 
-    return None  # Return None if today's file is not found
-
+    return merged_data
 def tfidvectorizer_embeddings(df):
     vectorizer = TfidfVectorizer(sublinear_tf=True, min_df=5, max_df=0.95)
     X = vectorizer.fit_transform(df['text_cleaned']).toarray()
@@ -135,8 +160,10 @@ def save_cluster_to_json(df, cluster_value):
 
 if __name__ == "__main__":
     today_date = datetime.now().strftime("%Y-%m-%d")
-    today_file_path = fetch_today_file(f".././data/{today_date}/business/articles")
-    df = pd.read_json(today_file_path)
+    #today_file_path = fetch_today_file(f".././data/{today_date}/business/articles")
+    all_articles_json_list = fetch_and_merge_json_files(f"../data/{today_date}/business/articles")
+    df = pd.DataFrame.from_records(all_articles_json_list)
+    #df = pd.read_json(today_file_path)
     df['text_cleaned'] = df['text'].apply(lambda text: preprocess_text(text))
     df = df[df['text_cleaned'] != '']
     X_transformers = sentance_transformers_embeddings(df)
