@@ -37,41 +37,7 @@ def convert_to_dict(string):
     
     return data_dict
 
-if __name__ == "__main__":
-    today_date = datetime.now().date()
-    directory_path = f'.././data/{today_date}/business/summary'
-    if not os.path.exists(directory_path):
-        os.makedirs(directory_path)
-    
-    data_list = []
-    no_of_tables = []
-    tables_data = []
-    rejected = []
-    tables = {}
-
-    prompt = ChatPromptTemplate.from_messages(
-    [
-        (
-            "system",
-            "you are an assisstent to generate then return most relevent tables from given content of numerical statistics only if applicable in json objects must be as e.g Object 1: Government Departments and Institutions\n```json\ headings of table must be clear and proper and provide table in a json objects form where All arrays must be of the same length"
-        ),
-        ("human", "{input}"),
-    ]
-)
-
-
-    
-    #llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0, model_name="gpt-4o")
-    llm = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
-    summarization_chain = load_summarize_chain(llm, chain_type="stuff")
-    chain = prompt | llm
-
-    #st.set_page_config(page_title="News Summary", page_icon="💁")
-    #st.header("A bot for latest Pakistani news💁")
-
-    today_date = datetime.now().strftime("%Y-%m-%d")
-    clusters_path = get_all_file_paths(f".././data/{today_date}/business/clusters")
-
+def get_save_summary(clusters_path):
     for c, cluster in enumerate(clusters_path):
         with open(cluster, 'r', encoding='utf-8') as file:
             meta = json.load(file)
@@ -84,12 +50,50 @@ if __name__ == "__main__":
         summery_dict = {"summary": summarization_result["output_text"],
                         "meta_data": metadata_list}
         
-        data_list.append(summarization_result["output_text"])
+        #data_list.append(summarization_result["output_text"])
 
         with open(filename, 'w') as json_file:
             json.dump(summery_dict, json_file, indent=4) 
         
         time.sleep(5)
+
+if __name__ == "__main__":
+    today_date = datetime.now().date()
+    directory_path = f'.././data/{today_date}/business/summary'
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
+
+    #llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0, model_name="gpt-4o")
+    llm = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
+    summarization_chain = load_summarize_chain(llm, chain_type="stuff")
+
+    today_date = datetime.now().strftime("%Y-%m-%d")
+    clusters_path = get_all_file_paths(f".././data/{today_date}/business/clusters")
+    get_save_summary(clusters_path)
+    
+    # data_list = []
+    # no_of_tables = []
+    # tables_data = []
+    # rejected = []
+    # tables = {}
+
+#     prompt = ChatPromptTemplate.from_messages(
+#     [
+#         (
+#             "system",
+#             "you are an assisstent to generate then return most relevent tables from given content of numerical statistics only if applicable in json objects must be as e.g Object 1: Government Departments and Institutions\n```json\ headings of table must be clear and proper and provide table in a json objects form where All arrays must be of the same length"
+#         ),
+#         ("human", "{input}"),
+#     ]
+# )
+
+
+    
+    
+    #chain = prompt | llm
+
+    
+
         #st.write(f"**Summary {c}:**", summarization_result["output_text"])
         #print(result["output_text"])
 

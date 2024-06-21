@@ -112,7 +112,7 @@ def eval_cluster(embedding, target):
     
     return y_pred
 
-def dimension_reduction(embedding, method):
+def dimension_reduction(df, embedding, method):
 
     pca = PCA(n_components=2, random_state=42)
 
@@ -125,7 +125,7 @@ def dimension_reduction(embedding, method):
     df[f'x0_{method}'] = x0 
     df[f'x1_{method}'] = x1
 
-def plot_pca(x0_name, x1_name, cluster_name, method):
+def plot_pca(df, x0_name, x1_name, cluster_name, method):
 
     plt.figure(figsize=(12, 7))
 
@@ -158,10 +158,8 @@ def save_cluster_to_json(df, cluster_value):
     
     print(f"Data saved to {filename}")
 
-if __name__ == "__main__":
-    today_date = datetime.now().strftime("%Y-%m-%d")
-    #today_file_path = fetch_today_file(f".././data/{today_date}/business/articles")
-    all_articles_json_list = fetch_and_merge_json_files(f"../data/{today_date}/business/articles")
+def create_save_clusters(all_articles_json_list):
+
     df = pd.DataFrame.from_records(all_articles_json_list)
     #df = pd.read_json(today_file_path)
     df['text_cleaned'] = df['text'].apply(lambda text: preprocess_text(text))
@@ -171,12 +169,18 @@ if __name__ == "__main__":
     clusters = kmeans.fit_predict(X_transformers)
     clusters_result_name = 'cluster_transformers'
     df[clusters_result_name] = clusters
-    dimension_reduction(X_transformers, 'transformers')
-    method = "transformers"
-    #plot_pca(f'x0_{method}', f'x1_{method}', cluster_name=clusters_result_name, method=method)
+    dimension_reduction(df, X_transformers, 'transformers')
+    #method = "transformers"
+    #plot_pca(df, f'x0_{method}', f'x1_{method}', cluster_name=clusters_result_name, method=method)
     
     for cluster in [0, 1, 2]:
         save_cluster_to_json(df, cluster)
+
+if __name__ == "__main__":
+    today_date = datetime.now().strftime("%Y-%m-%d")
+    #today_file_path = fetch_today_file(f".././data/{today_date}/business/articles")
+    all_articles_json_list = fetch_and_merge_json_files(f"../data/{today_date}/business/articles")
+    create_save_clusters(all_articles_json_list)
     
 
      #Elbow method
