@@ -11,6 +11,7 @@ import os
 import re
 import ast # convert string to dict
 import json
+import time
 
 load_dotenv()
 
@@ -60,8 +61,8 @@ if __name__ == "__main__":
 
 
     
-    llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0, model_name="gpt-4o")
-    #llm = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
+    #llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0, model_name="gpt-4o")
+    llm = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
     summarization_chain = load_summarize_chain(llm, chain_type="stuff")
     chain = prompt | llm
 
@@ -88,6 +89,7 @@ if __name__ == "__main__":
         with open(filename, 'w') as json_file:
             json.dump(summery_dict, json_file, indent=4) 
         
+        time.sleep(5)
         #st.write(f"**Summary {c}:**", summarization_result["output_text"])
         #print(result["output_text"])
 

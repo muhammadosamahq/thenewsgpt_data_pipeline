@@ -31,46 +31,46 @@ if __name__ == "__main__":
         
         st.write(meta_data_list)
         meta_data_list = []
-        for obj in summary["stats"]:
-            if obj:
-                st.write(obj["heading"])
-                try:
-                    if len(obj["data"].keys()) == 1:
-                        data = [key for key in obj["data"].keys()]
-                        df = pd.DataFrame.from_dict(obj["data"][data[0]])
-                        st.table(df)
-                    elif "headings" and "rows" in obj["data"].keys():
-                        headings = obj["data"]["headings"]
-                        rows = obj["data"]["rows"]
-                        df = pd.DataFrame(rows, columns=headings)
-                        st.table(df)
-                    elif "headings" and "data" in obj["data"].keys():
-                        headings = obj["data"]["headings"]
-                        rows = obj["data"]["data"]
-                        df = pd.DataFrame(rows, columns=headings)
-                        st.table(df)
-                    elif "Headings" and "Data" in obj["data"].keys():
-                        headings = obj["data"]["Headings"]
-                        rows = obj["data"]["Data"]
-                        df = pd.DataFrame(rows, columns=headings)
-                        st.table(df)
-                    else:
-                        df = pd.DataFrame.from_dict(obj["data"])
-                        st.table(df)
+        # for obj in summary["stats"]:
+        #     if obj:
+        #         st.write(obj["heading"])
+        #         try:
+        #             if len(obj["data"].keys()) == 1:
+        #                 data = [key for key in obj["data"].keys()]
+        #                 df = pd.DataFrame.from_dict(obj["data"][data[0]])
+        #                 st.table(df)
+        #             elif "headings" and "rows" in obj["data"].keys():
+        #                 headings = obj["data"]["headings"]
+        #                 rows = obj["data"]["rows"]
+        #                 df = pd.DataFrame(rows, columns=headings)
+        #                 st.table(df)
+        #             elif "headings" and "data" in obj["data"].keys():
+        #                 headings = obj["data"]["headings"]
+        #                 rows = obj["data"]["data"]
+        #                 df = pd.DataFrame(rows, columns=headings)
+        #                 st.table(df)
+        #             elif "Headings" and "Data" in obj["data"].keys():
+        #                 headings = obj["data"]["Headings"]
+        #                 rows = obj["data"]["Data"]
+        #                 df = pd.DataFrame(rows, columns=headings)
+        #                 st.table(df)
+        #             else:
+        #                 df = pd.DataFrame.from_dict(obj["data"])
+        #                 st.table(df)
 
-                except ValueError:
-                    if len(obj["data"].keys()) == 1:
-                        data = [key for key in obj["data"].keys()]
-                        my_data = dict([ (k, pd.Series(v)) for k,v in obj["data"][data[0]].items() ])
-                        df = pd.DataFrame.from_dict(my_data)
-                        st.table(df)
-                    else:
-                        my_data = dict([ (k, pd.Series(v)) for k,v in obj["data"].items() ])
-                        df = pd.DataFrame.from_dict(my_data)
-                        st.table(df)
+        #         except ValueError:
+        #             if len(obj["data"].keys()) == 1:
+        #                 data = [key for key in obj["data"].keys()]
+        #                 my_data = dict([ (k, pd.Series(v)) for k,v in obj["data"][data[0]].items() ])
+        #                 df = pd.DataFrame.from_dict(my_data)
+        #                 st.table(df)
+        #             else:
+        #                 my_data = dict([ (k, pd.Series(v)) for k,v in obj["data"].items() ])
+        #                 df = pd.DataFrame.from_dict(my_data)
+        #                 st.table(df)
                     
 
-        time.delay(5)
+        # time.delay(5)
 
 
                    
