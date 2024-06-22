@@ -5,6 +5,7 @@ from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 import os
 import json
+import re
 
 load_dotenv()
 
@@ -24,6 +25,13 @@ def json_load(file_path):
     )
     return loader.load()
 
+def clean_json_string(json_string):
+    # Remove trailing commas before closing brackets and braces
+    json_string = re.sub(r',\s*([\]}])', r'\1', json_string)
+    # Remove trailing commas before closing square brackets in arrays
+    json_string = re.sub(r',\s*]', r']', json_string)
+    return json_string
+
 llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0, model_name="gpt-4o")
 #llm = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
 
@@ -32,29 +40,19 @@ get_all_objects_json_prompt = ChatPromptTemplate.from_messages(
         (
             "system",
             '''Extract all statistical data from the given text and present it in JSON format. Ensure that all arrays in the JSON are of the same length and that the JSON keys have consistent and standardized headings. Use the following structure for the JSON output: 
+            ```json 
             all_json_object_list = [
                 {{
-                    "object": "comprehensive and clear title of the object",
+                    "object": "comprehensive and clear title of the object as well as mentioned the administrative unit if applicable",
                     "headings": [], 
                     "data": []
                 }},
-                {{
-                    "object": "comprehensive and clear title of the object",
-                    "headings": [], 
-                    "data": []
-                }},
-                {{
-                    "object": "comprehensive and clear title of the object",
-                    "headings": [], 
-                    "data": []
-                }},
-                {{
-                    "object": "comprehensive and clear title of the object",
-                    "headings": [], 
-                    "data": []
-                }}
+                ..........
             ]
-            Keep column names identical.
+            ```
+            it is must to Keep column names identical and values must be identical as well and there is no repetetion oj same json objects its your job you have to do it in a correct as told you.
+            
+            Note: most import thing is only create high quality json objects and ignore less qualitative stats. dont create extra delimiter.
             If there is no statistical data in the given text, then return None.'''
         ),
         ("human", "{input}")
@@ -122,7 +120,9 @@ for category in categories:
         if result.content:
             try:
                 # For openai llm
-                all_json_objects_list = json.loads(result.content.replace('```json', '').replace('```', '').strip())
+                cleaned_json_string = clean_json_string(result.content.replace('```json', '').replace('```', '').strip())
+                all_json_objects_list = json.loads(cleaned_json_string)
+                #all_json_objects_list = json.loads(("["+result.content.split("[")).strip())
                 # For google llm
                 #all_json_objects_list = json.loads(result.replace('```json', '').replace('```', '').strip())
                 
@@ -133,7 +133,11 @@ for category in categories:
                 
                 print("Data has been successfully saved to the stats folder as JSON file.")
 
-            except:
+                    # print(result.content)
+                    # with open(f'../data/{today_date}/{category}/stats/stats_{c}.json', 'w', encoding='utf-8') as file:
+                    #     json.dump(result.content, file, ensure_ascii=False, indent=4)
+            
+            except json.JSONDecodeError as e:
+                print(f"Error decoding JSON: {e}")
                 print(result.content)
-                with open(f'../data/{today_date}/{category}/stats/stats_{c}.json', 'w', encoding='utf-8') as file:
-                    json.dump(result.content, file, ensure_ascii=False, indent=4)
+                continue
