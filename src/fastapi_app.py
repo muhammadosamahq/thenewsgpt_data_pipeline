@@ -112,6 +112,41 @@ async def get_stat_by_id(category: str, stat_id: str):
         stat = json.load(file)
     return {"stat": stat}
 
+# @app.get("/counts/{category}")
+# async def get_counts(category: str):
+#     if category not in data:
+#         raise HTTPException(status_code=404, detail="Category not found")
+#     summary_count = len(data[category]["summary"])
+#     meta_data_count = len(data[category]["summary"])
+#     stats_count = len(data[category]["stats"])
+#     return {
+#         "summaries_count": summary_count,
+#         "meta_data_count": meta_data_count,
+#         "stats_count": stats_count
+#     }
+
+@app.get("/counts/{category}")
+async def get_counts(category: str):
+    if category not in data:
+        raise HTTPException(status_code=404, detail="Category not found")
+    summary_count = len(data[category]["summary"])
+    stats_count = len(data[category]["stats"])
+    
+    # Count the number of objects in each meta_data file
+    meta_data_counts = []
+    for meta_data_path in data[category]["summary"]:
+        file_name = os.path.basename(meta_data_path)
+        file_id = os.path.splitext(file_name)[0]
+        with open(meta_data_path, 'r', encoding='utf-8') as file:
+            meta = json.load(file)
+            meta_data_counts.append({"id": file_id, "len": len(meta["meta_data"])})
+    
+    return {
+        "summaries_count": summary_count,
+        "meta_data_counts": meta_data_counts,
+        "stats_count": stats_count
+    }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
