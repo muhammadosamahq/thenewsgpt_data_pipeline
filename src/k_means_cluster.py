@@ -19,8 +19,6 @@ import os
 
 
 def preprocess_text(text: str) -> str:
-    nltk.download('punkt')
-    nltk.download('stopwords')
     # Ensure text is a string
     if not isinstance(text, str):
         return ""
@@ -54,6 +52,21 @@ def preprocess_text(text: str) -> str:
 
 #     return None  # Return None if today's file is not found
 
+def get_next_file_number(directory):
+    # Get a list of all files in the directory
+    files = os.listdir(directory)
+    
+    # Filter out non-JSON files and strip the .json extension
+    json_files = [f for f in files if f.endswith('.json')]
+    json_numbers = [int(f.replace('.json', '')) for f in json_files if f.replace('.json', '').isdigit()]
+    
+    # If there are no JSON files, start from 0
+    if not json_numbers:
+        return 0
+    
+    # Otherwise, return the next number after the highest current number
+    return max(json_numbers) + 1
+
 def fetch_and_merge_json_files(directory):
     # List all files in the directory
     files = os.listdir(directory)
@@ -86,7 +99,6 @@ def tfidvectorizer_embeddings(df):
 def sentance_transformers_embeddings(df):
     st = time.time()
 
-    model = SentenceTransformer('all-MiniLM-L6-v2')
     df['encode_transforemers'] = df['text_cleaned'].apply(lambda text: model.encode(text, convert_to_numpy=True).flatten())
 
     et = time.time()
@@ -137,28 +149,28 @@ def plot_pca(df, x0_name, x1_name, cluster_name, method):
     plt.show()
 
 
-def save_cluster_to_json(df, cluster_value, category):
-    columns_to_keep = ['title', 'authors', 'source', 'publish_date', 'url', 'text_cleaned']
-    rename_columns = {'text_cleaned': 'text'}
+# def save_cluster_to_json(df, cluster_value, category):
+#     columns_to_keep = ['title', 'authors', 'source', 'publish_date', 'url', 'text_cleaned']
+#     rename_columns = {'text_cleaned': 'text'}
 
-    today_date = datetime.now().strftime("%Y-%m-%d")
-    df_cluster = df[df['cluster_transformers'] == cluster_value]
-    df_cluster = df_cluster[columns_to_keep].rename(columns=rename_columns)
+#     today_date = datetime.now().strftime("%Y-%m-%d")
+#     df_cluster = df[df['cluster_transformers'] == cluster_value]
+#     df_cluster = df_cluster[columns_to_keep].rename(columns=rename_columns)
 
-    json_data = df_cluster.to_json(orient='records', indent=4)
+#     json_data = df_cluster.to_json(orient='records', indent=4)
 
-    directory_path = f'.././data/{today_date}/{category}/clusters'
-    filename = f'{directory_path}/{cluster_value}.json'
+#     directory_path = f'.././data/{today_date}/{category}/clusters'
+#     filename = f'{directory_path}/{cluster_value}.json'
     
-    if not os.path.exists(directory_path):
-        os.makedirs(directory_path, exist_ok=True)
+#     if not os.path.exists(directory_path):
+#         os.makedirs(directory_path, exist_ok=True)
 
-    with open(filename, 'w') as file:
-        file.write(json_data)
+#     with open(filename, 'w') as file:
+#         file.write(json_data)
     
-    print(f"Data saved to {filename}")
+#     print(f"Data saved to {filename}")
 
-def create_save_clusters(all_articles_json_list, category):
+def get_clustered_dataframe(all_articles_json_list):
 
     df = pd.DataFrame.from_records(all_articles_json_list)
     #df = pd.read_json(today_file_path)
@@ -173,17 +185,64 @@ def create_save_clusters(all_articles_json_list, category):
     #method = "transformers"
     #plot_pca(df, f'x0_{method}', f'x1_{method}', cluster_name=clusters_result_name, method=method)
     
+    return df
+
+def exceed_cluster_len(df):
+    clusters_list = []
     for cluster in [0, 1, 2]:
-        save_cluster_to_json(df, cluster, category)
+        df_cluster = df[df['cluster_transformers'] == cluster]
+        df_cluster = df_cluster[columns_to_keep].rename(columns=rename_columns)
+
+        json_data = df_cluster.to_json(orient='records', indent=4)
+        json_objects_list = json.loads(json_data)
+        
+        if len(json_objects_list) <= 15:
+            directory_path = f'.././data/{today_date}/{category}/clusters'
+            if not os.path.exists(directory_path):
+                os.makedirs(directory_path)
+            file_no = get_next_file_number(directory_path)
+            filename = f'{directory_path}/{file_no}.json'
+
+            if not os.path.exists(directory_path):
+                os.makedirs(directory_path, exist_ok=True)
+
+            with open(filename, 'w') as file:
+                file.write(json_data)
+            
+            print(f"Data saved to {filename}")
+
+        else:
+            clusters_list.append(json_objects_list)
+    
+    return clusters_list
+
+def process_clusters(category, date):
+    all_articles_json_list = fetch_and_merge_json_files(f"../data/{date}/{category}/articles")
+    df = get_clustered_dataframe(all_articles_json_list)
+    limit_exceeded_clusters = exceed_cluster_len(df)
+    
+    while limit_exceeded_clusters:
+        new_clusters = []
+        for cluster_json in limit_exceeded_clusters:
+            df = get_clustered_dataframe(cluster_json)
+            new_clusters.extend(exceed_cluster_len(df))
+        limit_exceeded_clusters = new_clusters
+
 
 if __name__ == "__main__":
+    columns_to_keep = ['title', 'authors', 'source', 'publish_date', 'url', 'text_cleaned']
+    rename_columns = {'text_cleaned': 'text'}
+
+    model = SentenceTransformer('all-MiniLM-L6-v2')
+    nltk.download('punkt')
+    nltk.download('stopwords')
+
     today_date = datetime.now().strftime("%Y-%m-%d")
     #today_file_path = fetch_today_file(f".././data/{today_date}/business/articles")
     categories = ["business", "pakistan"]
     for category in categories:
-        all_articles_json_list = fetch_and_merge_json_files(f"../data/{today_date}/{category}/articles")
-        create_save_clusters(all_articles_json_list, category)
-    
+        process_clusters(category, today_date)
+            #save_cluster_to_json(df, cluster, category)
 
      #Elbow method
     # sse = []
