@@ -56,17 +56,20 @@ def get_save_summary_stats(clusters_path):
         time.sleep(5)
 
 if __name__ == "__main__":
-    today_date = datetime.now().date()
-    directory_path = f'.././data/{today_date}/business/summary'
-    if not os.path.exists(directory_path):
-        os.makedirs(directory_path)
-
-    o_llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0, model_name="gpt-4o")
+    #o_llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0, model_name="gpt-4o")
     g_llm = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
     summarization_chain = load_summarize_chain(g_llm, chain_type="stuff")
 
-    today_date = datetime.now().strftime("%Y-%m-%d")
-    clusters_path = get_all_file_paths(f".././data/{today_date}/business/clusters")
-    get_save_summary_stats(clusters_path)
+    today_date = datetime.now().date()
+    categories = ["business", "pakistan"]
+    for category in categories:
+        directory_path = f'.././data/{today_date}/{category}/summary'
+        if not os.path.exists(directory_path):
+            os.makedirs(directory_path)
+
+        
+
+        clusters_path = get_all_file_paths(f".././data/{today_date}/{category}/clusters")
+        get_save_summary_stats(clusters_path)
 
     

@@ -63,7 +63,7 @@ def filtered_urls(urls):
     print(len(filtered_urls))
     return filtered_urls
 
-def fetch_save_articles(urls):
+def fetch_save_articles(urls, category):
     current_date = datetime.now()
     #yesterday_5 = (current_date - timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=timezone(timedelta(hours=5)))
     yesterday = (current_date - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
@@ -87,7 +87,7 @@ def fetch_save_articles(urls):
                         article_data["id"] = counter 
                         article_data["url"] = url
                         article_data["source"] = object["source"]
-                        with open(f'.././data/{today_date}/business/articles/business_article_{counter}_{object["source"]}.json', 'w') as json_file:
+                        with open(f'.././data/{today_date}/{category}/articles/{category}_article_{counter}_{object["source"]}.json', 'w') as json_file:
                             json.dump(article_data, json_file, indent=4)
                         print("fetching...", counter)
                     else:
@@ -99,14 +99,21 @@ def fetch_save_articles(urls):
 
 if __name__ == "__main__":
     today_date = datetime.now().strftime("%Y-%m-%d")
-    directory_path = f".././data/{today_date}/business/articles"
-    if not os.path.exists(directory_path):
-        os.makedirs(directory_path, exist_ok=True)
+    business_directory_path = f".././data/{today_date}/business/articles"
+    pakistan_directory_path = f".././data/{today_date}/pakistan/articles"
+    if not os.path.exists(business_directory_path):
+        os.makedirs(business_directory_path, exist_ok=True)
+    if not os.path.exists(pakistan_directory_path):
+        os.makedirs(pakistan_directory_path, exist_ok=True)
 
     with open(".././urls/business_urls.json", 'r') as file:
-        urls = json.load(file)
+        business_urls = json.load(file)
+    with open(".././urls/pakistan_urls.json", 'r') as file:
+        pakistan_urls = json.load(file)
 
-    fetch_save_articles(urls)
+    categories = ["business", "pakistan"]
+    for urls, category in zip([business_urls, pakistan_urls], categories):
+        fetch_save_articles(urls, category)
 
         
 

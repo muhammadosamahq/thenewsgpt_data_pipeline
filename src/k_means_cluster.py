@@ -137,7 +137,7 @@ def plot_pca(df, x0_name, x1_name, cluster_name, method):
     plt.show()
 
 
-def save_cluster_to_json(df, cluster_value):
+def save_cluster_to_json(df, cluster_value, category):
     columns_to_keep = ['title', 'authors', 'source', 'publish_date', 'url', 'text_cleaned']
     rename_columns = {'text_cleaned': 'text'}
 
@@ -147,7 +147,7 @@ def save_cluster_to_json(df, cluster_value):
 
     json_data = df_cluster.to_json(orient='records', indent=4)
 
-    directory_path = f'.././data/{today_date}/business/clusters'
+    directory_path = f'.././data/{today_date}/{category}/clusters'
     filename = f'{directory_path}/cluster_{cluster_value}_records.json'
     
     if not os.path.exists(directory_path):
@@ -158,7 +158,7 @@ def save_cluster_to_json(df, cluster_value):
     
     print(f"Data saved to {filename}")
 
-def create_save_clusters(all_articles_json_list):
+def create_save_clusters(all_articles_json_list, category):
 
     df = pd.DataFrame.from_records(all_articles_json_list)
     #df = pd.read_json(today_file_path)
@@ -174,13 +174,15 @@ def create_save_clusters(all_articles_json_list):
     #plot_pca(df, f'x0_{method}', f'x1_{method}', cluster_name=clusters_result_name, method=method)
     
     for cluster in [0, 1, 2]:
-        save_cluster_to_json(df, cluster)
+        save_cluster_to_json(df, cluster, category)
 
 if __name__ == "__main__":
     today_date = datetime.now().strftime("%Y-%m-%d")
     #today_file_path = fetch_today_file(f".././data/{today_date}/business/articles")
-    all_articles_json_list = fetch_and_merge_json_files(f"../data/{today_date}/business/articles")
-    create_save_clusters(all_articles_json_list)
+    categories = ["business", "pakistan"]
+    for category in categories:
+        all_articles_json_list = fetch_and_merge_json_files(f"../data/{today_date}/{category}/articles")
+        create_save_clusters(all_articles_json_list, category)
     
 
      #Elbow method

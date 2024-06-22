@@ -1,8 +1,7 @@
 from langchain_core.prompts import ChatPromptTemplate
-from datetime import datetime, timedelta
+from datetime import datetime
 from langchain_community.document_loaders import JSONLoader
 from langchain_openai import ChatOpenAI
-from langchain_google_genai import GoogleGenerativeAI
 from dotenv import load_dotenv
 import os
 import json
@@ -25,53 +24,116 @@ def json_load(file_path):
     )
     return loader.load()
 
-today_date = datetime.now().date()
-directory_path = f'.././data/{today_date}/business/stats'
-if not os.path.exists(directory_path):
-    os.makedirs(directory_path)
-
-llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0, model_name="gpt-4o-2024-05-13")
+llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0, model_name="gpt-4o")
 #llm = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
 
-prompt = ChatPromptTemplate.from_messages(
+get_all_objects_json_prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            '''Extract all statistical data from the given text and present it in JSON format. Ensure that all arrays in the JSON are of the same length and that the JSON keys have consistent and standardized headings. Use the following structure for the JSON output: {{
-    "object": "comprehensive and clear title of the object"
-    "headings": [], 
-    "data": [] ,
-
-    keep column names identical
-    return all json objects in a list named all_json_object_list = []
-
-    if there is no statistical data in given text then return None
-}}'''
+            '''Extract all statistical data from the given text and present it in JSON format. Ensure that all arrays in the JSON are of the same length and that the JSON keys have consistent and standardized headings. Use the following structure for the JSON output: 
+            all_json_object_list = [
+                {{
+                    "object": "comprehensive and clear title of the object",
+                    "headings": [], 
+                    "data": []
+                }},
+                {{
+                    "object": "comprehensive and clear title of the object",
+                    "headings": [], 
+                    "data": []
+                }},
+                {{
+                    "object": "comprehensive and clear title of the object",
+                    "headings": [], 
+                    "data": []
+                }},
+                {{
+                    "object": "comprehensive and clear title of the object",
+                    "headings": [], 
+                    "data": []
+                }}
+            ]
+            Keep column names identical.
+            If there is no statistical data in the given text, then return None.'''
         ),
-        ("human", "{input}"),
+        ("human", "{input}")
     ]
 )
 
-chain = prompt | llm
+# json_schema_prompt = ChatPromptTemplate.from_messages(
+#     [
+#         (
+#             "system",
+#             '''You are responsible for extracting all JSON objects from the given context in the following format:
+#             all_json_object_list = [
+#                 {{
+#                     "object": "comprehensive and clear title of the object",
+#                     "headings": [], 
+#                     "data": []
+#                 }},
+#                 {{
+#                     "object": "comprehensive and clear title of the object",
+#                     "headings": [], 
+#                     "data": []
+#                 }},
+#                 {{
+#                     "object": "comprehensive and clear title of the object",
+#                     "headings": [], 
+#                     "data": []
+#                 }},
+#                 {{
+#                     "object": "comprehensive and clear title of the object",
+#                     "headings": [], 
+#                     "data": []
+#                 }}
+#             ]
+#             Note: you have to keep with this schema at any cost. If there is no JSON object, then just return None.'''
+#         ),
+#         ("human", "{input}")
+#     ]
+# )
 
-today_date = datetime.now().strftime("%Y-%m-%d")
-clusters_path = get_all_file_paths(f"../data/{today_date}/business/clusters")
+json_objects_chain = get_all_objects_json_prompt | llm
+#json_schema_chain = json_schema_prompt | llm
 
-all_json_objects_list = []
+categories = ["business", "pakistan"]
+today_date = datetime.now().date()
 
-for c, cluster in enumerate(clusters_path):
-    with open(cluster, 'r', encoding='utf-8') as file:
-        meta = json.load(file)
-    docs = json_load(cluster)
-    result = chain.invoke({"input": docs})
-    # For openai llm
-    all_json_objects_list = json.loads(result.content.replace('```json', '').replace('```', '').strip())
-    # For google llm
-    #all_json_objects_list = json.loads(result.replace('```json', '').replace('```', '').strip())
+for category in categories:
+    directory_path = f'../data/{today_date}/{category}/stats'
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
     
-    print(all_json_objects_list)
+    today_date = datetime.now().strftime("%Y-%m-%d")
+    clusters_path = get_all_file_paths(f"../data/{today_date}/{category}/clusters")
 
-    with open(f'.././data/{today_date}/business/stats/stats_{c}.json', 'w', encoding='utf-8') as file:
-        json.dump(all_json_objects_list, file, ensure_ascii=False, indent=4)
-    
-    print("Data has been successfully saved to the stats folder as JSON file.")
+    all_json_objects_list = []
+
+    for c, cluster in enumerate(clusters_path):
+        with open(cluster, 'r', encoding='utf-8') as file:
+            meta = json.load(file)
+        docs = json_load(cluster)
+        result = json_objects_chain.invoke({"input": docs})
+        #final_result = json_schema_chain.invoke({"input": result.content})
+
+        print(result.content)
+
+        if result.content:
+            try:
+                # For openai llm
+                all_json_objects_list = json.loads(result.content.replace('```json', '').replace('```', '').strip())
+                # For google llm
+                #all_json_objects_list = json.loads(result.replace('```json', '').replace('```', '').strip())
+                
+                print(all_json_objects_list)
+
+                with open(f'../data/{today_date}/{category}/stats/stats_{c}.json', 'w', encoding='utf-8') as file:
+                    json.dump(all_json_objects_list, file, ensure_ascii=False, indent=4)
+                
+                print("Data has been successfully saved to the stats folder as JSON file.")
+
+            except:
+                print(result.content)
+                with open(f'../data/{today_date}/{category}/stats/stats_{c}.json', 'w', encoding='utf-8') as file:
+                    json.dump(result.content, file, ensure_ascii=False, indent=4)
