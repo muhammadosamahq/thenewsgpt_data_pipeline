@@ -64,5 +64,11 @@
         "source": "ary",
         "url": "https://arynews.tv/category/business/",
         "attr": "entry-title td-module-title"
+    },
+    {
+        "id": 11,
+        "source": "thenation",
+        "url": "https://www.nation.com.pk/business",
+        "attr": "jeg_post_title category-page-title"
     }
 ]

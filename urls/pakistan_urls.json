@@ -52,5 +52,25 @@
         "source": "ary",
         "url": "https://arynews.tv/category/pakistan",
         "attr": "entry-title td-module-title"
+    },
+    {
+        "id": 9,
+        "source": "pakistantoday",
+        "url": "https://www.pakistantoday.com.pk/category/national/",
+        "attr": "entry-title td-module-title"
+    },
+    {
+        "id": 10,
+        "source": "thenation",
+        "url": "https://www.nation.com.pk/national",
+        "attr": "jeg_post_title category-page-title"
+    },
+    {
+        "id": 11,
+        "source": "thefinancialdaily",
+        "url": "https://thefinancialdaily.com/category/national/",
+        "attr": "entry-title td-module-title"
     }
 ]
+
+
