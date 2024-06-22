@@ -46,7 +46,7 @@ def get_save_summary_stats(clusters_path):
 
         metadata_list = [obj for obj in meta]
         #len(metadata_list)
-        filename = f'{directory_path}/summary_{c}.json'
+        filename = f'{directory_path}/{c}.json'
         summery_dict = {"summary": summarization_result["output_text"],
                         "meta_data": metadata_list,}
 

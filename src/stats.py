@@ -128,7 +128,7 @@ for category in categories:
                 
                 print(all_json_objects_list)
 
-                with open(f'../data/{today_date}/{category}/stats/stats_{c}.json', 'w', encoding='utf-8') as file:
+                with open(f'../data/{today_date}/{category}/stats/{c}.json', 'w', encoding='utf-8') as file:
                     json.dump(all_json_objects_list, file, ensure_ascii=False, indent=4)
                 
                 print("Data has been successfully saved to the stats folder as JSON file.")

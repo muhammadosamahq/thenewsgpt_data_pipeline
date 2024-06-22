@@ -148,7 +148,7 @@ def save_cluster_to_json(df, cluster_value, category):
     json_data = df_cluster.to_json(orient='records', indent=4)
 
     directory_path = f'.././data/{today_date}/{category}/clusters'
-    filename = f'{directory_path}/cluster_{cluster_value}_records.json'
+    filename = f'{directory_path}/{cluster_value}.json'
     
     if not os.path.exists(directory_path):
         os.makedirs(directory_path, exist_ok=True)

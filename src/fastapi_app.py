@@ -42,29 +42,55 @@ async def load_data_endpoint():
     await load_data()
     return {"status": "Data loaded successfully"}
 
-@app.get("/summaries/{category}")
+@app.get("/summaries/{category}/all")
 async def get_summaries(category: str):
     if category not in data:
         raise HTTPException(status_code=404, detail="Category not found")
-    summaries = []
+    summaries = {}
     for summary_path in data[category]["summary"]:
+        file_name = os.path.basename(summary_path)
+        file_id = os.path.splitext(file_name)[0]
         with open(summary_path, 'r', encoding='utf-8') as file:
             summary = json.load(file)
-            summaries.append(summary["summary"])
+            summaries[file_id] = summary["summary"]
     return {"summaries": summaries, "len": len(summaries)}
 
-@app.get("/meta_data/{category}")
-async def get_summaries(category: str):
+@app.get("/summaries/{category}/{summary_id}")
+async def get_summary_by_id(category: str, summary_id: str):
     if category not in data:
         raise HTTPException(status_code=404, detail="Category not found")
-    meta_data_list = []
-    for meta_data_path in data[category]["summary"]:
-        with open(meta_data_path, 'r', encoding='utf-8') as file:
-            meta_data = json.load(file)
-            meta_data_list.append(meta_data["meta_data"])
-    return {"meta_data": meta_data_list, "len": len(meta_data_list)}
+    summary_path = f"{data_directory}/{datetime.now().strftime('%Y-%m-%d')}/{category}/summary/{summary_id}.json"
+    if not os.path.exists(summary_path):
+        raise HTTPException(status_code=404, detail="Summary not found")
+    with open(summary_path, 'r', encoding='utf-8') as file:
+        summary = json.load(file)
+    return {"summary": summary["summary"]}
 
-@app.get("/stats/{category}")
+@app.get("/meta_data/{category}/all")
+async def get_meta_data(category: str):
+    if category not in data:
+        raise HTTPException(status_code=404, detail="Category not found")
+    meta_data = {}
+    for meta_data_path in data[category]["summary"]:
+        file_name = os.path.basename(meta_data_path)
+        file_id = os.path.splitext(file_name)[0]
+        with open(meta_data_path, 'r', encoding='utf-8') as file:
+            meta = json.load(file)
+            meta_data[file_id] = meta["meta_data"]
+    return {"meta_data": meta_data, "len": len(meta_data)}
+
+@app.get("/meta_data/{category}/{meta_id}")
+async def get_meta_data_by_id(category: str, meta_id: str):
+    if category not in data:
+        raise HTTPException(status_code=404, detail="Category not found")
+    meta_data_path = f"{data_directory}/{datetime.now().strftime('%Y-%m-%d')}/{category}/summary/{meta_id}.json"
+    if not os.path.exists(meta_data_path):
+        raise HTTPException(status_code=404, detail="Meta data not found")
+    with open(meta_data_path, 'r', encoding='utf-8') as file:
+        meta_data = json.load(file)
+    return {"meta_data": meta_data["meta_data"]}
+
+@app.get("/stats/{category}/all")
 async def get_stats(category: str):
     if category not in data:
         raise HTTPException(status_code=404, detail="Category not found")
@@ -74,6 +100,17 @@ async def get_stats(category: str):
             stat = json.load(file)
             stats.append(stat)
     return {"stats": stats}
+
+@app.get("/stats/{category}/{stat_id}")
+async def get_stat_by_id(category: str, stat_id: str):
+    if category not in data:
+        raise HTTPException(status_code=404, detail="Category not found")
+    stats_path = f"{data_directory}/{datetime.now().strftime('%Y-%m-%d')}/{category}/stats/{stat_id}.json"
+    if not os.path.exists(stats_path):
+        raise HTTPException(status_code=404, detail="Stat not found")
+    with open(stats_path, 'r', encoding='utf-8') as file:
+        stat = json.load(file)
+    return {"stat": stat}
 
 if __name__ == "__main__":
     import uvicorn
