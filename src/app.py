@@ -42,11 +42,14 @@ if __name__ == "__main__":
             st.write(meta_data_list)
             meta_data_list = []
             for s in statistics:
-                st.write(s["object"])
-                headings = s["headings"]
-                rows = s["data"]
-                df = pd.DataFrame(rows, columns=headings)
-                st.table(df)
+                try:
+                    st.write(s["object"])
+                    headings = s["headings"]
+                    rows = s["data"]
+                    df = pd.DataFrame(rows, columns=headings)
+                    st.table(df)
+                except:
+                    pass
 
         # for obj in summary["stats"]:
         #     if obj:
