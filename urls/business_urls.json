@@ -70,5 +70,46 @@
         "source": "thenation",
         "url": "https://www.nation.com.pk/business",
         "attr": "jeg_post_title category-page-title"
+    },
+    {
+        "id": 12,
+        "source": "theexpresstribune",
+        "url": "https://tribune.com.pk/business/archives?page=",
+        "attr": "horiz-news3-caption d-flex flex-wrap"
+    },
+    {
+        "id": 13,
+        "source": "pakobserver",
+        "url": "https://pakobserver.net/islamic/",
+        "attr": "jeg_post_title"
+    },
+    {
+        "id": 14,
+        "source": "bol",
+        "url": "https://www.bolnews.com/business/",
+        "attr": "post-box sty27 mb-20"
+    },
+    {
+        "id": 15,
+        "source": "hum",
+        "url": "https://humenglish.com/business/page/",
+        "attr": "card__post__title"
+    },
+    {
+        "id": 16,
+        "source": "92news",
+        "url": "https://92newshd.tv/category/business?pno=",
+        "attr": "col-sm-6 col-md-4 col-lg-3 sub-posts post-item"
+    },
+    {
+        "id": 17,
+        "source": "abbtakk",
+        "url": "https://abbtakk.tv/category/business/page/",
+        "attr": "entry-title"
     }
 ]
+
+
+
+
+

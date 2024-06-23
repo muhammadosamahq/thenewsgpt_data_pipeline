@@ -59,46 +59,173 @@ def filtered_urls(urls):
     print(len(urls))
     filtered_urls = list(map(lambda url: url.replace("/index.php", "https://dunyanews.tv"), urls))
     filtered_urls = list(map(lambda url: url.replace("/index.php/en/", "https://dunyanews.tv"), urls))
+    filtered_urls = ['https://92newshd.tv' + url if url.startswith('/about') else url for url in filtered_urls]
     filtered_urls = list(filter(lambda url: url.startswith("https://"), filtered_urls))
     print(len(filtered_urls))
     return filtered_urls
 
-def fetch_save_articles(urls, category):
+def get_all_pages_urls(url):
+    all_pages_url = []
+    for page in range(1, 6):
+        status, html = get_website_html_tags(url+str(page))
+        if status == 200:
+            urls = get_all_urls(html, object["attr"])
+            urls = filtered_urls(urls)
+            all_pages_url.append(urls)
+        time.sleep(2)
+    return all_pages_url
+
+def fetch_pagination_articles(object):
     current_date = datetime.now()
     #yesterday_5 = (current_date - timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=timezone(timedelta(hours=5)))
     yesterday = (current_date - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
 
     newspaper_tool = Newspaper4k()
-    counter = 0
+    
 
-    for c, object in enumerate(urls):
-        status, html = get_website_html_tags(object["url"])
-        print(object["source"])
+    for page in range(1, 6):
+        status, html = get_website_html_tags(object["url"]+str(page))
         if status == 200:
+            try:
+                urls = get_all_urls(html, object["attr"])
+                urls = filtered_urls(urls)    
+                for url in urls:
+                    try:
+                        article_data = newspaper_tool.get_article_data(url)
+                        # Check if 'publish_date' exists in the article data
+                        if 'publish_date' in article_data:
+                            given_date = datetime.fromisoformat(article_data["publish_date"])
+                            given_date_filtered = datetime.strptime(str(given_date).split("+")[0], "%Y-%m-%d %H:%M:%S")
+                            if given_date_filtered >= yesterday:
+                                counter += 1
+                                #print(counter, article_data)
+                                article_data["id"] = counter
+                                article_data["url"] = url
+                                article_data["source"] = "dawn"
+                                with open(f'.././data/{today_date}/{category}/articles/{category}_article_{counter}_{object["source"]}.json', 'w') as json_file:
+                                        json.dump(article_data, json_file, indent=4)
+                                print("fetching...", counter)
+                            else:
+                                print("outdated article, not getting fetched")
+                        else:
+                            print("publish_date not found in article_data")
+                        time.sleep(5)
+                    except Exception as e:
+                        print(f"Error processing article {url}: {e}")
+                        continue
+            except Exception as e:
+                print(f"Raise error: {e}")
+
+
+def fetch_articles(object):
+    current_date = datetime.now()
+    #yesterday_5 = (current_date - timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=timezone(timedelta(hours=5)))
+    yesterday = (current_date - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+
+    newspaper_tool = Newspaper4k()
+    
+    
+    status, html = get_website_html_tags(object["url"])
+    if status == 200:
+        try:
             urls = get_all_urls(html, object["attr"])
             urls = filtered_urls(urls)    
             for url in urls:
                 try:
                     article_data = newspaper_tool.get_article_data(url)
-                    given_date = datetime.fromisoformat(article_data["publish_date"])
-                    given_date_filtered = datetime.strptime(str(given_date).split("+")[0], "%Y-%m-%d %H:%M:%S")
-                    if  given_date_filtered >= yesterday:
-                        counter = counter + 1
-                        article_data["id"] = counter 
-                        article_data["url"] = url
-                        article_data["source"] = object["source"]
-                        with open(f'.././data/{today_date}/{category}/articles/{category}_article_{counter}_{object["source"]}.json', 'w') as json_file:
-                            json.dump(article_data, json_file, indent=4)
-                        print("fetching...", counter)
+                    # Check if 'publish_date' exists in the article data
+                    if 'publish_date' in article_data:
+                        given_date = datetime.fromisoformat(article_data["publish_date"])
+                        given_date_filtered = datetime.strptime(str(given_date).split("+")[0], "%Y-%m-%d %H:%M:%S")
+                        if given_date_filtered >= yesterday:
+                            counter += 1
+                            #print(counter, article_data)
+                            article_data["id"] = counter
+                            article_data["url"] = url
+                            article_data["source"] = "dawn"
+                            with open(f'.././data/{today_date}/{category}/articles/{category}_article_{counter}_{object["source"]}.json', 'w') as json_file:
+                                    json.dump(article_data, json_file, indent=4)
+                            print("fetching...", counter)
+                        else:
+                            print("outdated article, not getting fetched")
                     else:
-                        print("outdated article, not getting fetch")
+                        print("publish_date not found in article_data")
                     time.sleep(5)
                 except Exception as e:
-                    print(f"An error occurred: {e}")
+                    print(f"Error processing article {url}: {e}")
                     continue
+        except Exception as e:
+            print(f"Raise error: {e}")
+
+
+def fetch_save_articles(urls, category):
+    pagination_sources_list = ["theexpresstribune", "hum", "92news", "abbtakk"]
+
+    for c, object in enumerate(urls):
+        print(object["source"])
+        if object["source"] in pagination_sources_list:
+            fetch_pagination_articles(object)
+        else:
+            fetch_articles(object)
+
+
+# def fetch_save_articles(urls, category):
+#     current_date = datetime.now()
+#     yesterday = (current_date - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+
+#     newspaper_tool = Newspaper4k()
+#     counter = 0
+
+#     for url_info in urls:
+#         source = url_info['source']
+#         url = url_info['url']
+#         attr = url_info['attr']
+
+#         # Handle pagination for URLs with 'page' or 'pno'
+#         paginated_urls = []
+#         if 'page' in url or 'pno' in url:
+#             for i in range(1, 6):
+#                 paginated_urls.append(url + str(i))
+#         else:
+#             paginated_urls.append(url)
+
+#         for paginated_url in paginated_urls:
+#             status, html = get_website_html_tags(paginated_url)
+#             if status == 200:
+#                 try:
+#                     extracted_urls = get_all_urls(html, attr)
+#                     filtered_urls_list = filtered_urls(extracted_urls)
+
+#                     for article_url in filtered_urls_list:
+#                         try:
+#                             article_data = newspaper_tool.get_article_data(article_url)
+#                             if 'publish_date' in article_data:
+#                                 given_date = datetime.fromisoformat(article_data["publish_date"])
+#                                 given_date_filtered = datetime.strptime(str(given_date).split("+")[0], "%Y-%m-%d %H:%M:%S")
+#                                 if given_date_filtered >= yesterday:
+#                                     counter += 1
+#                                     article_data["id"] = counter
+#                                     article_data["url"] = article_url
+#                                     article_data["source"] = source
+#                                     with open(f'.././data/{today_date}/{category}/articles/{category}_article_{counter}_{object["source"]}.json', 'w') as json_file:
+#                                         json.dump(article_data, json_file, indent=4)
+#                                     print("fetching...", counter)
+#                                 else:
+#                                     print("outdated article, not getting fetched")
+#                             else:
+#                                 print("publish_date not found in article_data")
+#                             time.sleep(5)
+#                         except Exception as e:
+#                             print(f"Error processing article {article_url}: {e}")
+#                             continue
+#                 except Exception as e:
+#                     print(f"Error processing URL {paginated_url}: {e}")
+
 
 if __name__ == "__main__":
+    counter = 0
     today_date = datetime.now().strftime("%Y-%m-%d")
+    
     business_directory_path = f".././data/{today_date}/business/articles"
     pakistan_directory_path = f".././data/{today_date}/pakistan/articles"
     if not os.path.exists(business_directory_path):

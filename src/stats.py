@@ -35,7 +35,7 @@ def clean_json_string(json_string):
 llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0, model_name="gpt-4o")
 #llm = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
 
-get_all_objects_json_prompt = ChatPromptTemplate.from_messages(
+prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
@@ -58,6 +58,8 @@ get_all_objects_json_prompt = ChatPromptTemplate.from_messages(
         ("human", "{input}")
     ]
 )
+
+json_objects_chain = prompt | llm
 
 # json_schema_prompt = ChatPromptTemplate.from_messages(
 #     [
@@ -92,58 +94,61 @@ get_all_objects_json_prompt = ChatPromptTemplate.from_messages(
 #     ]
 # )
 
-json_objects_chain = get_all_objects_json_prompt | llm
+
 #json_schema_chain = json_schema_prompt | llm
 
-categories = ["business", "pakistan"]
-today_date = datetime.now().date()
+def create_stats(categories):
+    for category in categories:
+        today_date = datetime.now().date()
+        directory_path = f'../data/{today_date}/{category}/stats'
+        if not os.path.exists(directory_path):
+            os.makedirs(directory_path)
+        
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        clusters_path = get_all_file_paths(f"../data/{today_date}/{category}/clusters")
 
-for category in categories:
-    directory_path = f'../data/{today_date}/{category}/stats'
-    if not os.path.exists(directory_path):
-        os.makedirs(directory_path)
-    
-    today_date = datetime.now().strftime("%Y-%m-%d")
-    clusters_path = get_all_file_paths(f"../data/{today_date}/{category}/clusters")
+        all_json_objects_list = []
 
-    all_json_objects_list = []
+        for c, cluster in enumerate(clusters_path):
+            # Extract the last part of the path
+            last_part = cluster.split('/')[-1]
 
-    for c, cluster in enumerate(clusters_path):
-        # Extract the last part of the path
-        last_part = cluster.split('/')[-1]
+            # Extract the number before .json
+            id = last_part.split('.')[0]
 
-        # Extract the number before .json
-        id = last_part.split('.')[0]
+            with open(cluster, 'r', encoding='utf-8') as file:
+                meta = json.load(file)
+            docs = json_load(cluster)
+            result = json_objects_chain.invoke({"input": docs})
+            #final_result = json_schema_chain.invoke({"input": result.content})
 
-        with open(cluster, 'r', encoding='utf-8') as file:
-            meta = json.load(file)
-        docs = json_load(cluster)
-        result = json_objects_chain.invoke({"input": docs})
-        #final_result = json_schema_chain.invoke({"input": result.content})
+            print(result.content)
 
-        print(result.content)
+            if result.content:
+                try:
+                    # For openai llm
+                    cleaned_json_string = clean_json_string(result.content.replace('```json', '').replace('```', '').strip())
+                    all_json_objects_list = json.loads(cleaned_json_string)
+                    #all_json_objects_list = json.loads(("["+result.content.split("[")).strip())
+                    # For google llm
+                    #all_json_objects_list = json.loads(result.replace('```json', '').replace('```', '').strip())
+                    
+                    print(all_json_objects_list)
 
-        if result.content:
-            try:
-                # For openai llm
-                cleaned_json_string = clean_json_string(result.content.replace('```json', '').replace('```', '').strip())
-                all_json_objects_list = json.loads(cleaned_json_string)
-                #all_json_objects_list = json.loads(("["+result.content.split("[")).strip())
-                # For google llm
-                #all_json_objects_list = json.loads(result.replace('```json', '').replace('```', '').strip())
+                    with open(f'../data/{today_date}/{category}/stats/{id}.json', 'w', encoding='utf-8') as file:
+                        json.dump(all_json_objects_list, file, ensure_ascii=False, indent=4)
+                    
+                    print("Data has been successfully saved to the stats folder as JSON file.")
+
+                        # print(result.content)
+                        # with open(f'../data/{today_date}/{category}/stats/stats_{c}.json', 'w', encoding='utf-8') as file:
+                        #     json.dump(result.content, file, ensure_ascii=False, indent=4)
                 
-                print(all_json_objects_list)
+                except json.JSONDecodeError as e:
+                    print(f"Error decoding JSON: {e}")
+                    print(result.content)
+                    continue
 
-                with open(f'../data/{today_date}/{category}/stats/{id}.json', 'w', encoding='utf-8') as file:
-                    json.dump(all_json_objects_list, file, ensure_ascii=False, indent=4)
-                
-                print("Data has been successfully saved to the stats folder as JSON file.")
-
-                    # print(result.content)
-                    # with open(f'../data/{today_date}/{category}/stats/stats_{c}.json', 'w', encoding='utf-8') as file:
-                    #     json.dump(result.content, file, ensure_ascii=False, indent=4)
-            
-            except json.JSONDecodeError as e:
-                print(f"Error decoding JSON: {e}")
-                print(result.content)
-                continue
+if __name__ == "__main__":
+    categories = ["business", "pakistan"]
+    create_stats(categories)
