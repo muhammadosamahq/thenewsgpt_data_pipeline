@@ -187,7 +187,7 @@ def get_clustered_dataframe(all_articles_json_list):
     
     return df
 
-def exceed_cluster_len(df):
+def get_clusters_list(df):
     clusters_list = []
     for cluster in [0, 1, 2]:
         df_cluster = df[df['cluster_transformers'] == cluster]
@@ -219,13 +219,13 @@ def exceed_cluster_len(df):
 def process_clusters(category, date):
     all_articles_json_list = fetch_and_merge_json_files(f"../data/{date}/{category}/articles")
     df = get_clustered_dataframe(all_articles_json_list)
-    limit_exceeded_clusters = exceed_cluster_len(df)
+    limit_exceeded_clusters = get_clusters_list(df)
     
     while limit_exceeded_clusters:
         new_clusters = []
         for cluster_json in limit_exceeded_clusters:
             df = get_clustered_dataframe(cluster_json)
-            new_clusters.extend(exceed_cluster_len(df))
+            new_clusters.extend(get_clusters_list(df))
         limit_exceeded_clusters = new_clusters
 
 

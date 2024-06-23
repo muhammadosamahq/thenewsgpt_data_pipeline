@@ -38,6 +38,12 @@ def convert_to_dict(string):
 
 def get_save_summary_stats(clusters_path):
     for c, cluster in enumerate(clusters_path):
+        # Extract the last part of the path
+        last_part = cluster.split('/')[-1]
+
+        # Extract the number before .json
+        id = last_part.split('.')[0]
+
         with open(cluster, 'r', encoding='utf-8') as file:
             meta = json.load(file)
         docs = json_load(cluster)
@@ -46,7 +52,7 @@ def get_save_summary_stats(clusters_path):
 
         metadata_list = [obj for obj in meta]
         #len(metadata_list)
-        filename = f'{directory_path}/{c}.json'
+        filename = f'{directory_path}/{id}.json'
         summery_dict = {"summary": summarization_result["output_text"],
                         "meta_data": metadata_list,}
 
@@ -66,8 +72,6 @@ if __name__ == "__main__":
         directory_path = f'.././data/{today_date}/{category}/summary'
         if not os.path.exists(directory_path):
             os.makedirs(directory_path)
-
-        
 
         clusters_path = get_all_file_paths(f".././data/{today_date}/{category}/clusters")
         get_save_summary_stats(clusters_path)

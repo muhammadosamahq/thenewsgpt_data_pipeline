@@ -109,6 +109,12 @@ for category in categories:
     all_json_objects_list = []
 
     for c, cluster in enumerate(clusters_path):
+        # Extract the last part of the path
+        last_part = cluster.split('/')[-1]
+
+        # Extract the number before .json
+        id = last_part.split('.')[0]
+
         with open(cluster, 'r', encoding='utf-8') as file:
             meta = json.load(file)
         docs = json_load(cluster)
@@ -128,7 +134,7 @@ for category in categories:
                 
                 print(all_json_objects_list)
 
-                with open(f'../data/{today_date}/{category}/stats/{c}.json', 'w', encoding='utf-8') as file:
+                with open(f'../data/{today_date}/{category}/stats/{id}.json', 'w', encoding='utf-8') as file:
                     json.dump(all_json_objects_list, file, ensure_ascii=False, indent=4)
                 
                 print("Data has been successfully saved to the stats folder as JSON file.")

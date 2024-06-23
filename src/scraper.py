@@ -75,10 +75,10 @@ def fetch_save_articles(urls, category):
         status, html = get_website_html_tags(object["url"])
         print(object["source"])
         if status == 200:
-            try:
-                urls = get_all_urls(html, object["attr"])
-                urls = filtered_urls(urls)    
-                for url in urls:
+            urls = get_all_urls(html, object["attr"])
+            urls = filtered_urls(urls)    
+            for url in urls:
+                try:
                     article_data = newspaper_tool.get_article_data(url)
                     given_date = datetime.fromisoformat(article_data["publish_date"])
                     given_date_filtered = datetime.strptime(str(given_date).split("+")[0], "%Y-%m-%d %H:%M:%S")
@@ -93,9 +93,9 @@ def fetch_save_articles(urls, category):
                     else:
                         print("outdated article, not getting fetch")
                     time.sleep(5)
-
-            except:
-                pass
+                except Exception as e:
+                    print(f"An error occurred: {e}")
+                    continue
 
 if __name__ == "__main__":
     today_date = datetime.now().strftime("%Y-%m-%d")
