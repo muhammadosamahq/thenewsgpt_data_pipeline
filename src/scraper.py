@@ -5,8 +5,9 @@ from phi.tools.newspaper4k import Newspaper4k
 import time
 import json
 import os
+from typing import Tuple, List, Any, Dict, Union
 
-def get_website_html_tags(url):
+def get_status_code_and_soup(url: str) -> Tuple[int, BeautifulSoup]:
     headers = {
     'authority': 'cdn.unibotscdn.com',
     'accept': '*/*',
@@ -28,145 +29,155 @@ def get_website_html_tags(url):
     soup = BeautifulSoup(response.text, "html.parser")
     return response.status_code, soup
 
-def get_urls_pagination(soup, attr):
-    urls: list = []
-    c = 0
-    title = soup.find_all(attrs=str(attr))
-    for element in title:
-        urls.append(element.a['href'])
-    next_page = soup.find_all(attrs="page-link")[-1].a['href']
-    while next_page:
-        c = c + 1
-        session = requests.session()
-        response = session.get(str(next_page))
-        print(response.status_code)
-        soup = BeautifulSoup(response.text, "html.parser")
-        title = soup.find_all(attrs=str(attr))
-        for element in title:
-            urls.append(element.a['href'])
-        next_page = soup.find_all(attrs="page-link")[-1].a['href']
-        if c == 5:
-            return urls
-
-def get_all_urls(soup, attr):
-    urls: list = []
+def get_all_source_urls(soup: BeautifulSoup, attr: str) -> List[str]:
+    urls: List[str] = []
     title = soup.find_all(attrs=str(attr))
     for element in title:
         urls.append(element.a['href'])
     return urls
 
-def filtered_urls(urls):
+def get_filtered_urls(urls: List[str]) -> List[str]:
     print(len(urls))
-    filtered_urls = list(map(lambda url: url.replace("/index.php", "https://dunyanews.tv"), urls))
+    filtered_urls: List[str] = list(map(lambda url: url.replace("/index.php", "https://dunyanews.tv"), urls))
     filtered_urls = list(map(lambda url: url.replace("/index.php/en/", "https://dunyanews.tv"), urls))
     filtered_urls = ['https://92newshd.tv' + url if url.startswith('/about') else url for url in filtered_urls]
     filtered_urls = list(filter(lambda url: url.startswith("https://"), filtered_urls))
     print(len(filtered_urls))
     return filtered_urls
 
-def get_all_pages_urls(url):
-    all_pages_url = []
-    for page in range(1, 6):
-        status, html = get_website_html_tags(url+str(page))
-        if status == 200:
-            urls = get_all_urls(html, object["attr"])
-            urls = filtered_urls(urls)
-            all_pages_url.append(urls)
-        time.sleep(2)
-    return all_pages_url
+# def get_urls_pagination(soup, attr):
+#     urls: list = []
+#     c = 0
+#     title = soup.find_all(attrs=str(attr))
+#     for element in title:
+#         urls.append(element.a['href'])
+#     next_page = soup.find_all(attrs="page-link")[-1].a['href']
+#     while next_page:
+#         c = c + 1
+#         session = requests.session()
+#         response = session.get(str(next_page))
+#         print(response.status_code)
+#         soup = BeautifulSoup(response.text, "html.parser")
+#         title = soup.find_all(attrs=str(attr))
+#         for element in title:
+#             urls.append(element.a['href'])
+#         next_page = soup.find_all(attrs="page-link")[-1].a['href']
+#         if c == 5:
+#             return urls
 
-def fetch_pagination_articles(object):
-    current_date = datetime.now()
-    #yesterday_5 = (current_date - timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=timezone(timedelta(hours=5)))
-    yesterday = (current_date - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
 
-    newspaper_tool = Newspaper4k()
+
+# def get_individual_pages_urls(url):
+#     all_pages_url = []
+#     for page in range(1, 6):
+#         status, soup = get_status_code_and_soup(url+str(page))
+#         if status == 200:
+#             urls = get_all_source_urls(soup, object["attr"])
+#             urls = get_filtered_urls(urls)
+#             all_pages_url.append(urls)
+#         time.sleep(2)
+#     return all_pages_url
+
+
+
+# def fetch_pagination_articles(object, category, today_date):
+#     counter = 0
+#     current_date = datetime.now()
+#     #yesterday_5 = (current_date - timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=timezone(timedelta(hours=5)))
+#     yesterday = (current_date - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+
+#     newspaper_tool = Newspaper4k()
     
 
-    for page in range(1, 6):
-        status, html = get_website_html_tags(object["url"]+str(page))
-        if status == 200:
+#     for page in range(1, 6):
+#         status, soup = get_status_code_and_soup(object["url"]+str(page))
+#         if status == 200:
+#             try:
+#                 urls = get_all_source_urls(soup, object["attr"])
+#                 urls = get_filtered_urls(urls)    
+#                 for url in urls:
+#                     try:
+#                         article_data = newspaper_tool.get_article_data(url)
+#                         # Check if 'publish_date' exists in the article data
+#                         if 'publish_date' in article_data:
+#                             given_date = datetime.fromisoformat(article_data["publish_date"])
+#                             given_date_filtered = datetime.strptime(str(given_date).split("+")[0], "%Y-%m-%d %H:%M:%S")
+#                             if given_date_filtered >= yesterday:
+#                                 counter += 1
+#                                 #print(counter, article_data)
+#                                 article_data["id"] = counter
+#                                 article_data["url"] = url
+#                                 article_data["source"] = "dawn"
+#                                 with open(f'.././data/{today_date}/{category}/articles/{category}_article_{counter}_{object["source"]}.json', 'w') as json_file:
+#                                         json.dump(article_data, json_file, indent=4)
+#                                 print("fetching...", counter)
+#                             else:
+#                                 print("outdated article, not getting fetched")
+#                         else:
+#                             print("publish_date not found in article_data")
+#                         time.sleep(5)
+#                     except Exception as e:
+#                         print(f"Error processing article {url}: {e}")
+#                         continue
+#             except Exception as e:
+#                 print(f"Raise error: {e}")
+
+
+def fetch_articles(object: Dict[str, Union[str, int, List[str]]], category: str, today_date: datetime.datetime, soup: BeautifulSoup) -> None:
+    counter: int = 0
+    # current_date = datetime.now()
+    # #yesterday_5 = (current_date - timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=timezone(timedelta(hours=5)))
+    # yesterday = (current_date - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # newspaper_tool = Newspaper4k()
+    
+    
+    # status, soup = get_status_code_and_soup(object["url"])
+    #if status == 200:
+    try:
+        urls: List[str] = get_all_source_urls(soup, object["attr"])
+        urls: List[str] = get_filtered_urls(urls)   
+        for url in urls:
             try:
-                urls = get_all_urls(html, object["attr"])
-                urls = filtered_urls(urls)    
-                for url in urls:
-                    try:
-                        article_data = newspaper_tool.get_article_data(url)
-                        # Check if 'publish_date' exists in the article data
-                        if 'publish_date' in article_data:
-                            given_date = datetime.fromisoformat(article_data["publish_date"])
-                            given_date_filtered = datetime.strptime(str(given_date).split("+")[0], "%Y-%m-%d %H:%M:%S")
-                            if given_date_filtered >= yesterday:
-                                counter += 1
-                                #print(counter, article_data)
-                                article_data["id"] = counter
-                                article_data["url"] = url
-                                article_data["source"] = "dawn"
-                                with open(f'.././data/{today_date}/{category}/articles/{category}_article_{counter}_{object["source"]}.json', 'w') as json_file:
-                                        json.dump(article_data, json_file, indent=4)
-                                print("fetching...", counter)
-                            else:
-                                print("outdated article, not getting fetched")
-                        else:
-                            print("publish_date not found in article_data")
-                        time.sleep(5)
-                    except Exception as e:
-                        print(f"Error processing article {url}: {e}")
-                        continue
-            except Exception as e:
-                print(f"Raise error: {e}")
-
-
-def fetch_articles(object):
-    current_date = datetime.now()
-    #yesterday_5 = (current_date - timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=timezone(timedelta(hours=5)))
-    yesterday = (current_date - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-
-    newspaper_tool = Newspaper4k()
-    
-    
-    status, html = get_website_html_tags(object["url"])
-    if status == 200:
-        try:
-            urls = get_all_urls(html, object["attr"])
-            urls = filtered_urls(urls)    
-            for url in urls:
-                try:
-                    article_data = newspaper_tool.get_article_data(url)
-                    # Check if 'publish_date' exists in the article data
-                    if 'publish_date' in article_data:
-                        given_date = datetime.fromisoformat(article_data["publish_date"])
-                        given_date_filtered = datetime.strptime(str(given_date).split("+")[0], "%Y-%m-%d %H:%M:%S")
-                        if given_date_filtered >= yesterday:
-                            counter += 1
-                            #print(counter, article_data)
-                            article_data["id"] = counter
-                            article_data["url"] = url
-                            article_data["source"] = "dawn"
-                            with open(f'.././data/{today_date}/{category}/articles/{category}_article_{counter}_{object["source"]}.json', 'w') as json_file:
-                                    json.dump(article_data, json_file, indent=4)
-                            print("fetching...", counter)
-                        else:
-                            print("outdated article, not getting fetched")
+                article_data: Dict[str, Union[str, List[str]]] = newspaper_tool.get_article_data(url)
+                # Check if 'publish_date' exists in the article data
+                if 'publish_date' in article_data:
+                    given_date: datetime.datetime  = datetime.fromisoformat(article_data["publish_date"])
+                    given_date_filtered: datetime.datetime  = datetime.strptime(str(given_date).split("+")[0], "%Y-%m-%d %H:%M:%S")
+                    if given_date_filtered >= yesterday:
+                        counter += 1
+                        #print(counter, article_data)
+                        article_data["id"] = counter
+                        article_data["url"] = url
+                        article_data["source"] = "dawn"
+                        with open(f'.././data/{today_date}/{category}/articles/{category}_article_{counter}_{object["source"]}.json', 'w') as json_file:
+                                json.dump(article_data, json_file, indent=4)
+                        print("fetching...", counter)
                     else:
-                        print("publish_date not found in article_data")
-                    time.sleep(5)
-                except Exception as e:
-                    print(f"Error processing article {url}: {e}")
-                    continue
-        except Exception as e:
-            print(f"Raise error: {e}")
+                        print("outdated article, not getting fetched")
+                else:
+                    print("publish_date not found in article_data")
+                time.sleep(5)
+            except Exception as e:
+                print(f"Error processing article {url}: {e}")
+                continue
+    except Exception as e:
+        print(f"Raise error: {e}")
 
-
-def fetch_save_articles(urls, category):
-    pagination_sources_list = ["theexpresstribune", "hum", "92news", "abbtakk"]
-
-    for c, object in enumerate(urls):
+def fetch_save_articles(urls_info: List[Dict[str, Union[str, int]]], category: str, today_date: datetime.datetime) -> None:
+    status: int
+    soup: BeautifulSoup
+    for c, object in enumerate(urls_info):
         print(object["source"])
         if object["source"] in pagination_sources_list:
-            fetch_pagination_articles(object)
+            for page in range(1, 6):
+                status, soup = get_status_code_and_soup(object["url"]+str(page))
+                if status == 200:
+                    fetch_articles(object, category, today_date, soup)
         else:
-            fetch_articles(object)
+            status, soup = get_status_code_and_soup(object["url"])
+            if status == 200:
+                fetch_articles(object, category, today_date, soup)
 
 
 # def fetch_save_articles(urls, category):
@@ -221,26 +232,35 @@ def fetch_save_articles(urls, category):
 #                 except Exception as e:
 #                     print(f"Error processing URL {paginated_url}: {e}")
 
+def main() -> None:
+    #today_date = datetime.now().strftime("%Y-%m-%d")
+    for category in categories:
+        directory_path: str = f".././data/{today_date}/{category}/articles"
+       #pakistan_directory_path = f".././data/{today_date}/pakistan/articles"
+        if not os.path.exists(directory_path):
+            os.makedirs(directory_path, exist_ok=True)
+        # if not os.path.exists(pakistan_directory_path):
+        #     os.makedirs(pakistan_directory_path, exist_ok=True)
+
+        with open(".././urls/{category}_urls.json", 'r') as file:
+            urls_info: List[Dict[str, Union[str, int]]] = json.load(file)
+        # with open(".././urls/pakistan_urls.json", 'r') as file:
+        #     pakistan_urls = json.load(file)
+        fetch_save_articles(urls_info, category, today_date)
+
+        # for urls, category in zip([business_urls, pakistan_urls], categories):
+        #     fetch_save_articles(urls, category, today_date)
 
 if __name__ == "__main__":
-    counter = 0
-    today_date = datetime.now().strftime("%Y-%m-%d")
-    
-    business_directory_path = f".././data/{today_date}/business/articles"
-    pakistan_directory_path = f".././data/{today_date}/pakistan/articles"
-    if not os.path.exists(business_directory_path):
-        os.makedirs(business_directory_path, exist_ok=True)
-    if not os.path.exists(pakistan_directory_path):
-        os.makedirs(pakistan_directory_path, exist_ok=True)
+    categories: List[str] = ["business", "pakistan"]
+    pagination_sources_list: List[str] = ["theexpresstribune", "hum", "92news", "abbtakk"]
 
-    with open(".././urls/business_urls.json", 'r') as file:
-        business_urls = json.load(file)
-    with open(".././urls/pakistan_urls.json", 'r') as file:
-        pakistan_urls = json.load(file)
+    today_date: datetime.datetime = datetime.now()
+    #yesterday_5 = (current_date - timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=timezone(timedelta(hours=5)))
+    yesterday: datetime.datetime = (today_date - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
 
-    categories = ["business", "pakistan"]
-    for urls, category in zip([business_urls, pakistan_urls], categories):
-        fetch_save_articles(urls, category)
+    newspaper_tool: Newspaper4k = Newspaper4k()
+    main()
 
         
 

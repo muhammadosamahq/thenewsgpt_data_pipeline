@@ -9,13 +9,14 @@ from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score, f
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
-from datetime import datetime, timedelta
+from datetime import datetime
 import seaborn as sns
 import torch
 import numpy as np
 import time
 import json
 import os
+from typing import Tuple, List, Any, Dict, Union
 
 
 def preprocess_text(text: str) -> str:
@@ -23,17 +24,75 @@ def preprocess_text(text: str) -> str:
     if not isinstance(text, str):
         return ""
     # remove links
-    text = re.sub(r"http\S+", "", text)
+    text: str = re.sub(r"http\S+", "", text)
     # remove special chars and numbers
-    text = re.sub("[^A-Za-z]+", " ", text)
+    text: str = re.sub("[^A-Za-z]+", " ", text)
 
     # remove stopwords
-    tokens = nltk.word_tokenize(text)
-    tokens = [w for w in tokens if not w.lower() in stopwords.words("english")]
-    text = " ".join(tokens)
-    text = text.lower().strip()
+    tokens: str = nltk.word_tokenize(text)
+    tokens: List[str] = [w for w in tokens if not w.lower() in stopwords.words("english")]
+    text: str = " ".join(tokens)
+    text: str = text.lower().strip()
 
     return text
+
+def get_next_file_number(directory: str) -> int:
+    # Get a list of all files in the directory
+    files: List[str] = os.listdir(directory)
+    
+    # Filter out non-JSON files and strip the .json extension
+    json_files: List[str] = [f for f in files if f.endswith('.json')]
+    json_numbers: List[int] = [int(f.replace('.json', '')) for f in json_files if f.replace('.json', '').isdigit()]
+    
+    # If there are no JSON files, start from 0
+    if not json_numbers:
+        return 0
+    
+    # Otherwise, return the next number after the highest current number
+    return max(json_numbers) + 1
+
+def fetch_and_merge_json_files(directory: str) -> List[Dict[str, Union[str, int, List[str]]]]:
+    # List all files in the directory
+    files: List[str] = os.listdir(directory)
+
+    # Initialize an empty list to hold the merged JSON objects
+    merged_data: List[Dict[str, Union[str, int, List[str]]]] = []
+
+    # Iterate through each file in the directory
+    for file in files:
+        if file.endswith('.json'):
+            # Construct the full file path
+            file_path: str = os.path.join(directory, file)
+            
+            # Open and read the JSON file
+            with open(file_path, 'r') as f:
+                data: Dict[str, Union[str, int, List[str]]] = json.load(f)
+                
+                # If the data is a list, extend the merged_data list
+                if isinstance(data, list):
+                    merged_data.extend(data)
+                else:
+                    # If the data is a single object, append it to the merged_data list
+                    merged_data.append(data)
+
+    return merged_data
+
+def tfidvectorizer_embeddings(df: pd.DataFrame) -> None:
+    vectorizer: TfidfVectorizer = TfidfVectorizer(sublinear_tf=True, min_df=5, max_df=0.95)
+    X: np.ndarray = vectorizer.fit_transform(df['text_cleaned']).toarray()
+
+def sentance_transformers_embeddings(df: pd.DataFrame) -> np.ndarray:
+    st: float = time.time()
+
+    # Assuming `model` is initialized somewhere in your code
+    df['encode_transforemers'] = df['text_cleaned'].apply(lambda text: model.encode(text, convert_to_numpy=True).flatten())
+
+    et: float = time.time()
+
+    print("Elapsed time: {:.2f} seconds".format(et - st))
+
+    X_transformers: np.ndarray = np.vstack(df['encode_transforemers'])
+    return X_transformers
 
 # def fetch_today_file(directory):
 #     # Get today's date in YYYY-MM-DD format
@@ -52,61 +111,9 @@ def preprocess_text(text: str) -> str:
 
 #     return None  # Return None if today's file is not found
 
-def get_next_file_number(directory):
-    # Get a list of all files in the directory
-    files = os.listdir(directory)
-    
-    # Filter out non-JSON files and strip the .json extension
-    json_files = [f for f in files if f.endswith('.json')]
-    json_numbers = [int(f.replace('.json', '')) for f in json_files if f.replace('.json', '').isdigit()]
-    
-    # If there are no JSON files, start from 0
-    if not json_numbers:
-        return 0
-    
-    # Otherwise, return the next number after the highest current number
-    return max(json_numbers) + 1
 
-def fetch_and_merge_json_files(directory):
-    # List all files in the directory
-    files = os.listdir(directory)
 
-    # Initialize an empty list to hold the merged JSON objects
-    merged_data = []
 
-    # Iterate through each file in the directory
-    for file in files:
-        if file.endswith('.json'):
-            # Construct the full file path
-            file_path = os.path.join(directory, file)
-            
-            # Open and read the JSON file
-            with open(file_path, 'r') as f:
-                data = json.load(f)
-                
-                # If the data is a list, extend the merged_data list
-                if isinstance(data, list):
-                    merged_data.extend(data)
-                else:
-                    # If the data is a single object, append it to the merged_data list
-                    merged_data.append(data)
-
-    return merged_data
-def tfidvectorizer_embeddings(df):
-    vectorizer = TfidfVectorizer(sublinear_tf=True, min_df=5, max_df=0.95)
-    X = vectorizer.fit_transform(df['text_cleaned']).toarray()
-
-def sentance_transformers_embeddings(df):
-    st = time.time()
-
-    df['encode_transforemers'] = df['text_cleaned'].apply(lambda text: model.encode(text, convert_to_numpy=True).flatten())
-
-    et = time.time()
-
-    print("Elapsed time: {:.2f} seconds".format(et - st))
-
-    X_transformers = np.vstack(df['encode_transforemers'])
-    return X_transformers
 
 def eval_cluster(embedding, target):
     kmeans = KMeans(n_clusters=3, random_state=42)
@@ -124,15 +131,15 @@ def eval_cluster(embedding, target):
     
     return y_pred
 
-def dimension_reduction(df, embedding, method):
+def dimension_reduction(df: pd.DataFrame, embedding: np.ndarray, method: str) -> None:
 
     pca = PCA(n_components=2, random_state=42)
 
-    pca_vecs = pca.fit_transform(embedding)
+    pca_vecs: np.ndarray = pca.fit_transform(embedding)
 
     # save our two dimensions into x0 and x1
-    x0 = pca_vecs[:, 0]
-    x1 = pca_vecs[:, 1]
+    x0: np.ndarray = pca_vecs[:, 0]
+    x1: np.ndarray = pca_vecs[:, 1]
     
     df[f'x0_{method}'] = x0 
     df[f'x1_{method}'] = x1
@@ -170,16 +177,16 @@ def plot_pca(df, x0_name, x1_name, cluster_name, method):
     
 #     print(f"Data saved to {filename}")
 
-def get_clustered_dataframe(all_articles_json_list):
+def get_clustered_dataframe(all_articles_json_list: list[Dict[str, Union[str, int, List[str]]]]) -> pd.DataFrame:
 
-    df = pd.DataFrame.from_records(all_articles_json_list)
+    df: pd.DataFrame = pd.DataFrame.from_records(all_articles_json_list)
     #df = pd.read_json(today_file_path)
     df['text_cleaned'] = df['text'].apply(lambda text: preprocess_text(text))
     df = df[df['text_cleaned'] != '']
-    X_transformers = sentance_transformers_embeddings(df)
-    kmeans = KMeans(n_clusters=3, random_state=42)
-    clusters = kmeans.fit_predict(X_transformers)
-    clusters_result_name = 'cluster_transformers'
+    X_transformers: np.ndarray = sentance_transformers_embeddings(df)
+    kmeans: KMeans = KMeans(n_clusters=3, random_state=42)
+    clusters: np.ndarray = kmeans.fit_predict(X_transformers)
+    clusters_result_name: str = 'cluster_transformers'
     df[clusters_result_name] = clusters
     dimension_reduction(df, X_transformers, 'transformers')
     #method = "transformers"
@@ -187,21 +194,21 @@ def get_clustered_dataframe(all_articles_json_list):
     
     return df
 
-def get_clusters_list(df):
-    clusters_list = []
+def get_clusters_list(df: pd.DataFrame, category: str, today_date: datetime) -> List[List[Dict[str, str]]]:
+    clusters_list: List = []
     for cluster in [0, 1, 2]:
         df_cluster = df[df['cluster_transformers'] == cluster]
         df_cluster = df_cluster[columns_to_keep].rename(columns=rename_columns)
 
-        json_data = df_cluster.to_json(orient='records', indent=4)
-        json_objects_list = json.loads(json_data)
+        json_data: str = df_cluster.to_json(orient='records', indent=4)
+        json_objects_list: List[Dict[str: str]] = json.loads(json_data)
         
         if len(json_objects_list) <= 15:
-            directory_path = f'.././data/{today_date}/{category}/clusters'
+            directory_path: str = f'.././data/{today_date}/{category}/clusters'
             if not os.path.exists(directory_path):
                 os.makedirs(directory_path)
-            file_no = get_next_file_number(directory_path)
-            filename = f'{directory_path}/{file_no}.json'
+            file_no: int = get_next_file_number(directory_path)
+            filename: str = f'{directory_path}/{file_no}.json'
 
             if not os.path.exists(directory_path):
                 os.makedirs(directory_path, exist_ok=True)
@@ -216,32 +223,35 @@ def get_clusters_list(df):
     
     return clusters_list
 
-def process_clusters(category, date):
-    all_articles_json_list = fetch_and_merge_json_files(f"../data/{date}/{category}/articles")
-    df = get_clustered_dataframe(all_articles_json_list)
-    limit_exceeded_clusters = get_clusters_list(df)
+def process_clusters(category: str, today_date: datetime) -> None:
+    all_articles_json_list: list[Dict[str, Union[str, int, List[str]]]] = fetch_and_merge_json_files(f"../data/{today_date}/{category}/articles")
+    df: pd.DataFrame = get_clustered_dataframe(all_articles_json_list)
+    limit_exceeded_clusters: List[List[Dict[str: str]]] = get_clusters_list(df, category, today_date)
     
     while limit_exceeded_clusters:
-        new_clusters = []
+        new_clusters: List = []
         for cluster_json in limit_exceeded_clusters:
-            df = get_clustered_dataframe(cluster_json)
-            new_clusters.extend(get_clusters_list(df))
+            df: pd.DataFrame = get_clustered_dataframe(cluster_json)
+            new_clusters.extend(get_clusters_list(df, category, today_date))
         limit_exceeded_clusters = new_clusters
 
 
-if __name__ == "__main__":
-    columns_to_keep = ['title', 'authors', 'source', 'publish_date', 'url', 'text_cleaned']
-    rename_columns = {'text_cleaned': 'text'}
+def main() -> None:
+    today_date: datetime = datetime.now().strftime("%Y-%m-%d")
+    #today_file_path = fetch_today_file(f".././data/{today_date}/business/articles")
+    categories: List[str] = ["business", "pakistan"]
+    for category in categories:
+        process_clusters(category, today_date)
 
-    model = SentenceTransformer('all-MiniLM-L6-v2')
+if __name__ == "__main__":
+    columns_to_keep: List[str] = ['title', 'authors', 'source', 'publish_date', 'url', 'text_cleaned']
+    rename_columns: Dict[str, str] = {'text_cleaned': 'text'}
+
+    model: SentenceTransformer = SentenceTransformer('all-MiniLM-L6-v2')
     nltk.download('punkt')
     nltk.download('stopwords')
 
-    today_date = datetime.now().strftime("%Y-%m-%d")
-    #today_file_path = fetch_today_file(f".././data/{today_date}/business/articles")
-    categories = ["business", "pakistan"]
-    for category in categories:
-        process_clusters(category, today_date)
+    main()
             #save_cluster_to_json(df, cluster, category)
 
      #Elbow method
