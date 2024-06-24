@@ -82,6 +82,7 @@ def tfidvectorizer_embeddings(df: pd.DataFrame) -> None:
     X: np.ndarray = vectorizer.fit_transform(df['text_cleaned']).toarray()
 
 def sentance_transformers_embeddings(df: pd.DataFrame) -> np.ndarray:
+    model: SentenceTransformer = SentenceTransformer('all-MiniLM-L6-v2')
     st: float = time.time()
 
     # Assuming `model` is initialized somewhere in your code
@@ -195,6 +196,9 @@ def get_clustered_dataframe(all_articles_json_list: list[Dict[str, Union[str, in
     return df
 
 def get_clusters_list(df: pd.DataFrame, category: str, today_date: datetime) -> List[List[Dict[str, str]]]:
+    columns_to_keep: List[str] = ['title', 'authors', 'source', 'publish_date', 'url', 'text_cleaned']
+    rename_columns: Dict[str, str] = {'text_cleaned': 'text'}
+    
     clusters_list: List = []
     for cluster in [0, 1, 2]:
         df_cluster = df[df['cluster_transformers'] == cluster]

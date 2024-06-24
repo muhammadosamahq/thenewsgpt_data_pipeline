@@ -38,6 +38,9 @@ def json_load(file_path: str) -> List[str]:
 #     return data_dict
 
 def get_save_summary_stats(clusters_directory_path: List[str], summary_directory_path: str) -> None:  
+    g_llm: GoogleGenerativeAI = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
+    summarization_chain = load_summarize_chain(g_llm, chain_type="stuff")
+    
     for c, cluster in enumerate(clusters_directory_path):
         # Extract the last part of the path
         last_part: str = cluster.split('/')[-1]

@@ -123,9 +123,14 @@ def get_filtered_urls(urls: List[str]) -> List[str]:
 #                 print(f"Raise error: {e}")
 
 
-def fetch_articles(object: Dict[str, Union[str, int, List[str]]], category: str, today_date: datetime.datetime, soup: BeautifulSoup) -> None:
-    counter: int = 0
-    # current_date = datetime.now()
+def fetch_articles(object: Dict[str, Union[str, int, List[str]]], category: str, today_date: datetime, soup: BeautifulSoup, counter: int) -> None:
+    
+    newspaper_tool: Newspaper4k = Newspaper4k()
+    current_date = datetime.now()
+    yesterday_12am: datetime = (current_date - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    today_12am: datetime = (current_date).replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # 
     # #yesterday_5 = (current_date - timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=timezone(timedelta(hours=5)))
     # yesterday = (current_date - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
 
@@ -142,9 +147,9 @@ def fetch_articles(object: Dict[str, Union[str, int, List[str]]], category: str,
                 article_data: Dict[str, Union[str, List[str]]] = newspaper_tool.get_article_data(url)
                 # Check if 'publish_date' exists in the article data
                 if 'publish_date' in article_data:
-                    given_date: datetime.datetime  = datetime.fromisoformat(article_data["publish_date"])
-                    given_date_filtered: datetime.datetime  = datetime.strptime(str(given_date).split("+")[0], "%Y-%m-%d %H:%M:%S")
-                    if given_date_filtered >= yesterday:
+                    given_date: datetime  = datetime.fromisoformat(article_data["publish_date"])
+                    given_date_filtered: datetime  = datetime.strptime(str(given_date).split("+")[0], "%Y-%m-%d %H:%M:%S")
+                    if today_12am <= given_date_filtered >= yesterday_12am:
                         counter += 1
                         #print(counter, article_data)
                         article_data["id"] = counter
@@ -157,14 +162,18 @@ def fetch_articles(object: Dict[str, Union[str, int, List[str]]], category: str,
                         print("outdated article, not getting fetched")
                 else:
                     print("publish_date not found in article_data")
-                time.sleep(5)
+                time.sleep(1)
             except Exception as e:
                 print(f"Error processing article {url}: {e}")
                 continue
     except Exception as e:
         print(f"Raise error: {e}")
 
-def fetch_save_articles(urls_info: List[Dict[str, Union[str, int]]], category: str, today_date: datetime.datetime) -> None:
+    return counter
+
+def fetch_save_articles(urls_info: List[Dict[str, Union[str, int]]], category: str, today_date: datetime) -> None:
+    pagination_sources_list: List[str] = ["theexpresstribune", "hum", "92news", "abbtakk"]
+    counter: int = 0
     status: int
     soup: BeautifulSoup
     for c, object in enumerate(urls_info):
@@ -173,11 +182,11 @@ def fetch_save_articles(urls_info: List[Dict[str, Union[str, int]]], category: s
             for page in range(1, 6):
                 status, soup = get_status_code_and_soup(object["url"]+str(page))
                 if status == 200:
-                    fetch_articles(object, category, today_date, soup)
+                    counter = fetch_articles(object, category, today_date, soup, counter)
         else:
             status, soup = get_status_code_and_soup(object["url"])
             if status == 200:
-                fetch_articles(object, category, today_date, soup)
+                counter = fetch_articles(object, category, today_date, soup, counter)
 
 
 # def fetch_save_articles(urls, category):
@@ -253,13 +262,11 @@ def main() -> None:
 
 if __name__ == "__main__":
     categories: List[str] = ["business", "pakistan"]
-    pagination_sources_list: List[str] = ["theexpresstribune", "hum", "92news", "abbtakk"]
-
-    today_date: datetime.datetime = datetime.now()
+    
+    today_date: datetime = datetime.now()
     #yesterday_5 = (current_date - timedelta(days=1)).replace(hour=8, minute=0, second=0, microsecond=0, tzinfo=timezone(timedelta(hours=5)))
-    yesterday: datetime.datetime = (today_date - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    
 
-    newspaper_tool: Newspaper4k = Newspaper4k()
     main()
 
         
