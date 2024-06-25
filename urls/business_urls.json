@@ -64,7 +64,7 @@
     },
     {
         "id": 7,
-        "source": "profit.pakistantoday",
+        "source": "profit_pakistantoday",
         "url": "https://profit.pakistantoday.com.pk/category/top-news-updates/",
         "urls_attr": "entry-title td-module-title",
         "title_attr": "tdb-title-textk",
@@ -158,7 +158,8 @@
         "url": "https://abbtakk.tv/category/business/page/",
         "urls_attr": "entry-title",
         "title_attr": "entry-title",
-        "content_attr": "penci-entry-content"
+        "content_attr": "penci-entry-content",
+        "date_attr": "None"
     }
 ]
 

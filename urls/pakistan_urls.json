@@ -167,7 +167,8 @@
         "url": "https://abbtakk.tv/category/pakistan/page/",
         "urls_attr": "entry-title",
         "title_attr": "entry-title",
-        "content_attr": "penci-entry-content"
+        "content_attr": "penci-entry-content",
+        "date_attr": "None"
     }
 ]
 
