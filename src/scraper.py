@@ -39,7 +39,7 @@ def get_all_source_urls(soup: BeautifulSoup, attr: str) -> List[str]:
 def get_filtered_urls(urls: List[str]) -> List[str]:
     print(len(urls))
     filtered_urls: List[str] = list(map(lambda url: url.replace("/index.php", "https://dunyanews.tv"), urls))
-    filtered_urls = list(map(lambda url: url.replace("/index.php/en/", "https://dunyanews.tv"), urls))
+    filtered_urls = list(map(lambda url: url.replace("/index.php/en", "https://dunyanews.tv"), urls))
     filtered_urls = ['https://92newshd.tv' + url if url.startswith('/about') else url for url in filtered_urls]
     filtered_urls = list(filter(lambda url: url.startswith("https://"), filtered_urls))
     print(len(filtered_urls))
