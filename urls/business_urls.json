@@ -24,7 +24,7 @@
         "urls_attr": "entry-title",
         "title_attr": "entry-title",
         "content_attr": "the-post-content",
-        "date_attr": "d-block d-md-inline"
+        "date_attr": "d-block"
     },
     {
         "id": 3,

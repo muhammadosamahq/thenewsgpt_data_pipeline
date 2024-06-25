@@ -3,115 +3,171 @@
         "id": 0,
         "source": "dawn",
         "url": "https://www.dawn.com/pakistan",
-        "attr": "story"
+        "urls_attr": "story",
+        "title_attr": "story__link",
+        "content_attr": "story__content",
+        "date_attr": "timestamp--date"
     },
     {
         "id": 1,
         "source": "geo",
         "url": "https://www.geo.tv/category/pakistan",
-        "attr": "border-box"
+        "urls_attr": "border-box",
+        "title_attr": "heading_H",
+        "content_attr": "story-area",
+        "date_attr": "post-date-time"
     },
     {
         "id": 2,
         "source": "propakistani",
         "url": "https://propakistani.pk/category/others/",
-        "attr": "entry-title"
+        "urls_attr": "entry-title",
+        "title_attr": "entry-title",
+        "content_attr": "the-post-content",
+        "date_attr": "d-block"
     },
     {
         "id": 3,
         "source": "dailypakistan",
         "url": "https://en.dailypakistan.com.pk/pakistan",
-        "attr": "tt-post type-2"
+        "urls_attr": "tt-post",
+        "title_attr": "c-h1",
+        "content_attr": "news-detail-content-class",
+        "date_attr": "prr-dp-dt"
     },
     {
         "id": 4,
         "source": "aaj",
         "url": "https://english.aaj.tv/pakistan",
-        "attr": "story"
+        "urls_attr": "story",
+        "title_attr": "story__link",
+        "content_attr": "story__content",
+        "date_attr": "story__time"
     },
     {
         "id": 5,
         "source": "dunya",
         "url": "https://dunyanews.tv/en/Pakistan",
-        "attr": "media__title media__title--threelines"
+        "urls_attr": "media__title",
+        "title_attr": "articleTitle",
+        "content_attr": "col-7-detail",
+        "date_attr": "publish-time"
     },
     {
         "id": 6,
         "source": "thenewsinternational",
         "url": "https://www.thenews.com.pk/latest/category/national",
-        "attr": "writter-list-item-story"
+        "urls_attr": "writter-list-item-story",
+        "title_attr": "detail-heading",
+        "content_attr": "story-detail",
+        "date_attr": "category-date"
     },
     {
         "id": 7,
         "source": "pakobserver",
         "url": "https://pakobserver.net/pakistan/",
-        "attr": "jeg_post_title"
+        "urls_attr": "jeg_post_title",
+        "title_attr": "jeg_post_title",
+        "content_attr": "content-inner",
+        "date_attr": "jeg_meta_date"
     },
     {
         "id": 8,
         "source": "ary",
         "url": "https://arynews.tv/category/pakistan",
-        "attr": "entry-title td-module-title"
+        "urls_attr": "entry-title",
+        "title_attr": "tdb-title-text",
+        "content_attr": "td_block_wrap tdb_single_content tdi_79 td-pb-border-top single-content td_block_template_1 td-post-content tagdiv-type",
+        "date_attr": "entry-date"
     },
     {
         "id": 9,
         "source": "pakistantoday",
         "url": "https://www.pakistantoday.com.pk/category/national/",
-        "attr": "entry-title td-module-title"
+        "urls_attr": "entry-title td-module-title",
+        "title_attr": "tdb-title-text",
+        "content_attr": "td_block_wrap tdb_single_content tdi_41 td-pb-border-top td_block_template_1 td-post-content tagdiv-type",
+        "date_attr": "entry-date updated td-module-date"
     },
     {
         "id": 10,
         "source": "thenation",
         "url": "https://www.nation.com.pk/national",
-        "attr": "jeg_post_title category-page-title"
+        "urls_attr": "jeg_post_title",
+        "title_attr": "jeg_post_title",
+        "content_attr": "content-inner",
+        "date_attr": "jeg_meta_date"
     },
     {
         "id": 11,
         "source": "thefinancialdaily",
         "url": "https://thefinancialdaily.com/category/national/",
-        "attr": "entry-title td-module-title"
+        "urls_attr": "entry-title td-module-title",
+        "title_attr": "tdb-title-text",
+        "content_attr": "td_block_wrap tdb_single_content tdi_110 td-pb-border-top td_block_template_1 td-post-content tagdiv-type",
+        "date_attr": "entry-date updated td-module-date"
     },
     {
         "id": 12,
         "source": "theexpresstribune",
         "url": "https://tribune.com.pk/pakistan/archives?page=",
-        "attr": "horiz-news3-caption d-flex flex-wrap"
+        "urls_attr": "horiz-news3-caption",
+        "title_attr": "story-box-section",
+        "content_attr": "story-text",
+        "date_attr": "left-authorbox"
     },
     {
         "id": 13,
         "source": "pakobserver",
         "url": "https://pakobserver.net/islamabad/",
-        "attr": "jeg_post_title"
+        "urls_attr": "jeg_post_title",
+        "title_attr": "jeg_post_title",
+        "content_attr": "content-inner",
+        "date_attr": "jeg_meta_date"
     },
     {
         "id": 14,
         "source": "pakobserver",
         "url": "https://pakobserver.net/karachi/",
-        "attr": "jeg_post_title"
+        "urls_attr": "jeg_post_title",
+        "title_attr": "jeg_post_title",
+        "content_attr": "content-inner",
+        "date_attr": "jeg_meta_date"
     },
     {
         "id": 15,
         "source": "pakobserver",
         "url": "https://pakobserver.net/lahore/",
-        "attr": "jeg_post_title"
+        "urls_attr": "jeg_post_title",
+        "title_attr": "jeg_post_title",
+        "content_attr": "content-inner",
+        "date_attr": "jeg_meta_date"
     },
     {
         "id": 16,
         "source": "hum",
         "url": "https://humenglish.com/pakistan/page/",
-        "attr": "card__post__title"
+        "urls_attr": "card__post__title",
+        "title_attr": "wrap__article-detail-title",
+        "content_attr": "has-drop-cap-fluid",
+        "date_attr": "text-dark text-capitalize ml-1"
     },
     {
         "id": 17,
         "source": "92news",
         "url": "https://92newshd.tv/category/pakistan?pno=",
-        "attr": "col-sm-6 col-md-4 col-lg-3 sub-posts post-item"
+        "urls_attr": "col-sm-6",
+        "title_attr": "col",
+        "content_attr": "content_detail",
+        "date_attr": "published_time"
     },
     {
         "id": 18,
         "source": "abbtakk",
-        "url": "https://abbtakk.tv/category/pakistan/page/1",
-        "attr": "entry-title"
+        "url": "https://abbtakk.tv/category/pakistan/page/",
+        "urls_attr": "entry-title",
+        "title_attr": "entry-title",
+        "content_attr": "penci-entry-content"
     }
 ]
 
