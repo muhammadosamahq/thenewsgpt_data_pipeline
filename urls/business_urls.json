@@ -3,31 +3,46 @@
         "id": 0,
         "source": "dawn",
         "url": "https://www.dawn.com/business",
-        "attr": "story"
+        "urls_attr": "story",
+        "title_attr": "story__link",
+        "content_attr": "story__content",
+        "date_attr": "timestamp--date"
     },
     {
         "id": 1,
         "source": "geo",
         "url": "https://www.geo.tv/category/business",
-        "attr": "border-box"
+        "urls_attr": "border-box",
+        "title_attr": "heading_H",
+        "content_attr": "story-area",
+        "date_attr": "post-date-time"
     },
     {
         "id": 2,
         "source": "propakistani",
         "url": "https://propakistani.pk/category/business/",
-        "attr": "entry-title"
+        "urls_attr": "entry-title",
+        "title_attr": "entry-title",
+        "content_attr": "the-post-content",
+        "date_attr": "d-block d-md-inline"
     },
     {
         "id": 3,
         "source": "dailypakistan",
         "url": "https://en.dailypakistan.com.pk/business",
-        "attr": "tt-post type-2"
+        "urls_attr": "tt-post",
+        "title_attr": "c-h1",
+        "content_attr": "news-detail-content-class",
+        "date_attr": "prr-dp-dt"
     },
     {
         "id": 4,
         "source": "aaj",
         "url": "https://english.aaj.tv/business-economy",
-        "attr": "story"
+        "urls_attr": "story",
+        "title_attr": "story__link",
+        "content_attr": "story__content",
+        "date_attr": "story__time"
     },
     {
         "id": 5,

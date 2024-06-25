@@ -53,7 +53,7 @@ if __name__ == "__main__":
             if not os.path.exists(directory_path):
                 os.makedirs(directory_path, exist_ok=True)
         
-        with open(f".././urls/{category}_urls_testing.json", 'r') as file:
+        with open(f".././urls/{category}_urls.json", 'r') as file:
             urls_info = json.load(file)
         
         fetch_save_articles(urls_info, category, today_date)
