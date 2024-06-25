@@ -11,6 +11,7 @@ data/
 
 # File formats
 *.pyc
+*.txt
 
 # Files
 .env
