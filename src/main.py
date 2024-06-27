@@ -28,7 +28,7 @@ import ast  # convert string to dict
 import time
 
 
-from news_tool_scraper import *
+from extra_files.news_tool_scraper import *
 from k_means_cluster import *
 from summarization import *
 from stats import *

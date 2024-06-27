@@ -11,7 +11,7 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from datetime import datetime
 import seaborn as sns
-import torch
+#import torch
 import numpy as np
 import time
 import json
@@ -196,7 +196,7 @@ def get_clustered_dataframe(all_articles_json_list: list[Dict[str, Union[str, in
     return df
 
 def get_clusters_list(df: pd.DataFrame, category: str, today_date: datetime) -> List[List[Dict[str, str]]]:
-    columns_to_keep: List[str] = ['title', 'authors', 'source', 'publish_date', 'url', 'text_cleaned']
+    columns_to_keep: List[str] = ['id', 'datetime','title', 'authors', 'publish_date', 'url', 'text_cleaned']
     rename_columns: Dict[str, str] = {'text_cleaned': 'text'}
     
     clusters_list: List = []
@@ -228,7 +228,7 @@ def get_clusters_list(df: pd.DataFrame, category: str, today_date: datetime) -> 
     return clusters_list
 
 def process_clusters(category: str, today_date: datetime) -> None:
-    all_articles_json_list: list[Dict[str, Union[str, int, List[str]]]] = fetch_and_merge_json_files(f"../data/{today_date}/{category}/articles")
+    all_articles_json_list: list[Dict[str, Union[str, int, List[str]]]] = fetch_and_merge_json_files(f".././data/{today_date}/{category}/articles")
     df: pd.DataFrame = get_clustered_dataframe(all_articles_json_list)
     limit_exceeded_clusters: List[List[Dict[str: str]]] = get_clusters_list(df, category, today_date)
     

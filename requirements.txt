@@ -2,6 +2,8 @@ streamlit
 google-generativeai
 python-dotenv
 langchain
+langchain_community
+langchain_openai
 PyPDF2
 faiss-cpu
 langchain_google_genai
@@ -18,3 +20,14 @@ duckduckgo-search
 nest_asyncio
 newspaper4k
 lxml_html_clean
+dateparser
+
+# k_means_cluster.py 
+scikit-learn
+sentence-transformers
+matplotlib
+seaborn
+
+# fastapi_app.py
+fastapi
+fastapi_utils
