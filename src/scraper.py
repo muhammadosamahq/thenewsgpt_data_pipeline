@@ -103,8 +103,9 @@ def get_url_meta_data(soup, object):
 
     return get_url_meta_data_list
 
-def save_article_data(url):
-    try:        
+def save_article_data(url, category):
+    try:     
+        counter += 1   
         print("successful... Date under range", date, counter)
         print(url)
         obj["id"] = counter
@@ -112,7 +113,7 @@ def save_article_data(url):
         obj["authors"] = article_data["authors"]
         obj["text"] = article_data["text"]
         obj["publish_date"] = article_data["publish_date"]
-        with open(f'./data/{today_date}/business/articles/{counter}_article_{object["source"]}.json', 'w') as json_file:
+        with open(f'.././data/{today_date}/{category}/articles/{counter}_article_{object["source"]}.json', 'w') as json_file:
             json.dump(obj, json_file, indent=4)
             print("file saved successfully")
         time.sleep(2)
@@ -122,7 +123,7 @@ def save_article_data(url):
 
 if __name__ == "__main__":
     data = []
-    counter = 0
+    
     pagination_sources_list: List[str] = ["propakistani", "theexpresstribune", "hum", "92news", "abbtakk"]
 
     newspaper_tool: Newspaper4k = Newspaper4k()
@@ -130,21 +131,58 @@ if __name__ == "__main__":
     today_date: datetime = datetime.now().strftime("%Y-%m-%d")
     yesterday_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
 
-    directory_path: str = f"./data/{today_date}/business/articles"
-       #pakistan_directory_path = f".././data/{today_date}/pakistan/articles"
-    if not os.path.exists(directory_path):
-        os.makedirs(directory_path, exist_ok=True)
+    categories: List[str] = ["business", "pakistan"]
+    for category in categories:
+        counter = 0
+        directory_path: str = f".././data/{today_date}/{category}/articles"
+        #pakistan_directory_path = f".././data/{today_date}/pakistan/articles"
+        if not os.path.exists(directory_path):
+            os.makedirs(directory_path, exist_ok=True)
 
-    with open(f"./urls/business_urls_updated.json", 'r') as file:
-        urls_info = json.load(file)
+        with open(f".././urls/{category}_urls_updated.json", 'r') as file:
+            urls_info = json.load(file)
 
-    for c, object in enumerate(urls_info):
-        print(object["source"])
-        print(c)
-        if object["source"] in pagination_sources_list:
-            for page in range(1, 6):
+        for c, object in enumerate(urls_info):
+            print(object["source"])
+            print(c)
+            if object["source"] in pagination_sources_list:
+                for page in range(1, 6):
+                    try:
+                        status, soup = get_status_code_and_soup(object["url"] + str(page))
+                        if status == 200:
+                            url_meta_data = get_url_meta_data(soup, object)
+                            print("len of urls", len(url_meta_data))
+                            for obj in url_meta_data:
+                                print(obj["url"])
+                                print(obj["datetime"])
+                                date = standardize_date(obj["datetime"])
+                                if date == yesterday_date:
+                                    url = get_filtered_url(obj["url"])
+                                    if url:
+                                        try:     
+                                            counter += 1   
+                                            print("successful... Date under range", date, counter)
+                                            print(url)
+                                            obj["id"] = counter
+                                            article_data: Dict[str, Union[str, List[str]]] = newspaper_tool.get_article_data(url)
+                                            obj["authors"] = article_data["authors"]
+                                            obj["text"] = article_data["text"]
+                                            obj["publish_date"] = article_data["publish_date"]
+                                            with open(f'.././data/{today_date}/{category}/articles/{counter}_article_{object["source"]}.json', 'w') as json_file:
+                                                json.dump(obj, json_file, indent=4)
+                                                print("file saved successfully")
+                                            time.sleep(2)
+                                        except Exception as e:
+                                            print(f"Error processing article {url}: {e}")
+                                        continue
+                        time.sleep(1)
+                    except Exception as e:
+                        print(f"Raise error: {e}")
+
+
+            else:
                 try:
-                    status, soup = get_status_code_and_soup(object["url"] + str(page))
+                    status, soup = get_status_code_and_soup(object["url"])
                     if status == 200:
                         url_meta_data = get_url_meta_data(soup, object)
                         print("len of urls", len(url_meta_data))
@@ -153,33 +191,25 @@ if __name__ == "__main__":
                             print(obj["datetime"])
                             date = standardize_date(obj["datetime"])
                             if date == yesterday_date:
-                                counter += 1
                                 url = get_filtered_url(obj["url"])
                                 if url:
-                                    save_article_data(url)
+                                    try:     
+                                        counter += 1   
+                                        print("successful... Date under range", date, counter)
+                                        print(url)
+                                        obj["id"] = counter
+                                        article_data: Dict[str, Union[str, List[str]]] = newspaper_tool.get_article_data(url)
+                                        obj["authors"] = article_data["authors"]
+                                        obj["text"] = article_data["text"]
+                                        obj["publish_date"] = article_data["publish_date"]
+                                        with open(f'.././data/{today_date}/{category}/articles/{counter}_article_{object["source"]}.json', 'w') as json_file:
+                                            json.dump(obj, json_file, indent=4)
+                                            print("file saved successfully")
+                                        time.sleep(2)
+                                    except Exception as e:
+                                        print(f"Error processing article {url}: {e}")
                                     continue
-                    time.sleep(1)
+
+                        time.sleep(1)
                 except Exception as e:
                     print(f"Raise error: {e}")
-
-
-        else:
-            try:
-                status, soup = get_status_code_and_soup(object["url"])
-                if status == 200:
-                    url_meta_data = get_url_meta_data(soup, object)
-                    print("len of urls", len(url_meta_data))
-                    for obj in url_meta_data:
-                        print(obj["url"])
-                        print(obj["datetime"])
-                        date = standardize_date(obj["datetime"])
-                        if date == yesterday_date:
-                            counter += 1
-                            url = get_filtered_url(obj["url"])
-                            if url:
-                                save_article_data(url)
-                                continue
-
-                    time.sleep(1)
-            except Exception as e:
-                print(f"Raise error: {e}")
