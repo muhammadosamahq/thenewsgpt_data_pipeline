@@ -134,7 +134,7 @@ if __name__ == "__main__":
     categories: List[str] = ["business", "pakistan"]
     for category in categories:
         counter = 0
-        directory_path: str = f".././data/{today_date}/{category}/articles"
+        directory_path: str = f".././data/pakistan/{today_date}/raw_articles"
         #pakistan_directory_path = f".././data/{today_date}/pakistan/articles"
         if not os.path.exists(directory_path):
             os.makedirs(directory_path, exist_ok=True)
@@ -163,12 +163,13 @@ if __name__ == "__main__":
                                             counter += 1   
                                             print("successful... Date under range", date, counter)
                                             print(url)
-                                            obj["id"] = counter
+                                            #obj["id"] = counter
                                             article_data: Dict[str, Union[str, List[str]]] = newspaper_tool.get_article_data(url)
                                             obj["authors"] = article_data["authors"]
+                                            obj["source"] = object["source"]
                                             obj["text"] = article_data["text"]
-                                            obj["publish_date"] = article_data["publish_date"]
-                                            with open(f'.././data/{today_date}/{category}/articles/{counter}_article_{object["source"]}.json', 'w') as json_file:
+                                            obj["datetime"] = date
+                                            with open(f'.././data/pakistan/{today_date}/raw_articles/{counter}_article_{object["source"]}.json', 'w') as json_file:
                                                 json.dump(obj, json_file, indent=4)
                                                 print("file saved successfully")
                                             time.sleep(2)
@@ -197,12 +198,13 @@ if __name__ == "__main__":
                                         counter += 1   
                                         print("successful... Date under range", date, counter)
                                         print(url)
-                                        obj["id"] = counter
+                                        #obj["id"] = counter
                                         article_data: Dict[str, Union[str, List[str]]] = newspaper_tool.get_article_data(url)
                                         obj["authors"] = article_data["authors"]
+                                        obj["source"] = object["source"]
                                         obj["text"] = article_data["text"]
-                                        obj["publish_date"] = article_data["publish_date"]
-                                        with open(f'.././data/{today_date}/{category}/articles/{counter}_article_{object["source"]}.json', 'w') as json_file:
+                                        obj["datetime"] = date
+                                        with open(f'.././data/pakistan/{today_date}/raw_articles/{counter}_article_{object["source"]}.json', 'w') as json_file:
                                             json.dump(obj, json_file, indent=4)
                                             print("file saved successfully")
                                         time.sleep(2)
