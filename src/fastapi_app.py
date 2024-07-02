@@ -6,11 +6,9 @@ from glob import glob
 from datetime import datetime
 import json
 
-
-
 app = FastAPI()
 
-data = {}
+data_directory: str = ".././data"
 
 def get_all_file_paths(directory: str) -> List[str]:
     file_paths = []
@@ -27,58 +25,62 @@ def read_json_file(file_path: str) -> Dict[str, Any]:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error reading file {file_path}: {str(e)}")
 
-class DirectoryPath(BaseModel):
-    directory: str
+class DateInput(BaseModel):
     date: str
 
 @app.post("/load-data/")
-async def load_data(directory: DirectoryPath):
-    data_directory = directory.directory
-    date = directory.date
+async def load_data(date_input: DateInput):
+    date = date_input.date
+    global data
 
-    data = {
-        "business": {
-            "summary": [read_json_file(file_path) for file_path in get_all_file_paths(f"{data_directory}/{date}/business/summary")],
-            "stats": [read_json_file(file_path) for file_path in get_all_file_paths(f"{data_directory}/{date}/business/stats")]
-        },
-        "pakistan": {
-            "summary": [read_json_file(file_path) for file_path in get_all_file_paths(f"{data_directory}/{date}/pakistan/summary")],
-            "stats": [read_json_file(file_path) for file_path in get_all_file_paths(f"{data_directory}/{date}/pakistan/stats")]
+    try:
+        data = {
+            "business": {
+                "summary": [read_json_file(file_path) for file_path in get_all_file_paths(f"{data_directory}/{date}/business/summary")],
+                "stats": [read_json_file(file_path) for file_path in get_all_file_paths(f"{data_directory}/{date}/business/stats")]
+            },
+            "pakistan": {
+                "summary": [read_json_file(file_path) for file_path in get_all_file_paths(f"{data_directory}/{date}/pakistan/summary")],
+                "stats": [read_json_file(file_path) for file_path in get_all_file_paths(f"{data_directory}/{date}/pakistan/stats")]
+            }
         }
-    }
+ 
+        print(f"Loaded data: {data}")
+        return {"msg": "We got data successfully", "data": data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading data: {str(e)}")
 
-    return {
-        "msg": "We got data successfully",
-        "data": data
-    }
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
 
-# @app.get("/health")
-# async def health_check():
-#     return {"status": "ok"}
-
+@app.get("/summaries/{category}")
+async def get_summaries(category: str):
+    print(f"Requested category: {category}")
+    print(f"Available categories: {list(data.keys())}")
+    if category in data:
+        return {"summaries": data[category]["summary"]}
+    else:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
 # @app.get("/summaries/{category}/all")
 # async def get_summaries(category: str):
 #     if category not in data:
 #         raise HTTPException(status_code=404, detail="Category not found")
 #     summaries = {}
-#     for summary_path in data[category]["summary"]:
-#         file_name = os.path.basename(summary_path)
+#     for file_path in data[category]["summary"]:
+#         file_name = os.path.basename(file_path)
 #         file_id = os.path.splitext(file_name)[0]
-#         with open(summary_path, 'r', encoding='utf-8') as file:
-#             summary = json.load(file)
-#             summaries[file_id] = summary["summary"]
+#         summary = read_json_file(file_path)
+#         summaries[file_id] = summary.get("summary", "Summary not found")
 #     return {"summaries": summaries, "len": len(summaries)}
 
-# @app.get("/summaries/{category}/{summary_id}")
-# async def get_summary_by_id(category: str, summary_id: str):
-#     if category not in data:
-#         raise HTTPException(status_code=404, detail="Category not found")
-#     summary_path = f".././data/{datetime.now().strftime('%Y-%m-%d')}/{category}/summary/{summary_id}.json"
-#     if not os.path.exists(summary_path):
-#         raise HTTPException(status_code=404, detail="Summary not found")
-#     with open(summary_path, 'r', encoding='utf-8') as file:
-#         summary = json.load(file)
-#     return {"summary": summary["summary"]}
+@app.get("/summaries/{category}/{summary_id}")
+async def get_summary_by_id(category: str, summary_id: str):
+    if category in data:
+        return {"summary": data[category]["summary"][0]}
+    else:
+        raise HTTPException(status_code=404, detail="Category not found")
 
 # @app.get("/meta_data/{category}/all")
 # async def get_meta_data(category: str):

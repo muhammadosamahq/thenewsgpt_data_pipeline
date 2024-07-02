@@ -104,7 +104,7 @@ def get_chain():
 def create_stats(category, clusters_directory_path):
     stats_chain = get_chain()
     today_date = datetime.now().date()
-    directory_path = f'../data/{today_date}/{category}/stats'
+    directory_path = f'.././data/pakistan/{today_date}/stats/{category}'
     if not os.path.exists(directory_path):
         os.makedirs(directory_path)
     
@@ -140,7 +140,7 @@ def create_stats(category, clusters_directory_path):
 
                 print(all_json_objects_list)
 
-                with open(f'../data/{today_date}/{category}/stats/{id}.json', 'w', encoding='utf-8') as file:
+                with open(f'../data/pakistan/{today_date}/stats/{category}/{id}.json', 'w', encoding='utf-8') as file:
                     json.dump(all_json_objects_list, file, ensure_ascii=False, indent=4)
                 
                 print("Data has been successfully saved to the stats folder as JSON file.")
@@ -156,9 +156,9 @@ def create_stats(category, clusters_directory_path):
 
 def main():
     today_date = datetime.now().strftime("%Y-%m-%d")
-    categories = ["business", "pakistan"]
+    categories: List[str] = ["business", "politics"]
     for category in categories:
-        clusters_directory_path = get_all_file_paths(f"../data/{today_date}/{category}/clusters")
+        clusters_directory_path = get_all_file_paths(f".././data/pakistan/{today_date}/clusters/{category}")
         create_stats(category, clusters_directory_path)
 
 if __name__ == "__main__":

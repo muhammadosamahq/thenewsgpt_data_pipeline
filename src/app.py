@@ -23,8 +23,10 @@ if __name__ == "__main__":
 
     for category in categories:
 
-        summaries_path = get_all_file_paths(f".././data/2024-06-23/{category}/summary")
-        stats_path = get_all_file_paths(f".././data/2024-06-23/{category}/stats")
+        # summaries_path = get_all_file_paths(f".././data/2024-06-28/{category}/summary")
+        summaries_path = get_all_file_paths(f".././testing/summary")
+        # stats_path = get_all_file_paths(f".././data/2024-06-28/{category}/stats")
+        stats_path = get_all_file_paths(f".././testing/{category}")
 
 
         for cluster, stats in zip(summaries_path, stats_path):

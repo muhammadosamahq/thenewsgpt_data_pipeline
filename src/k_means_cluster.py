@@ -196,11 +196,25 @@ def get_clustered_dataframe(all_articles_json_list: list[Dict[str, Union[str, in
     return df
 
 def get_clusters_list(df: pd.DataFrame, category: str, today_date: datetime) -> List[List[Dict[str, str]]]:
-    columns_to_keep: List[str] = ['id', 'datetime','title', 'authors', 'publish_date', 'url', 'text_cleaned']
+    columns_to_keep: List[str] = ['id', 'datetime','title', 'authors', 'url', 'text_cleaned']
     rename_columns: Dict[str, str] = {'text_cleaned': 'text'}
+
+    category_directory_path: str = f'.././data/pakistan/{today_date}/clusters/{category}'
+    json_files_count = 0
+
+    # # Walk through the directory
+    # for root, dirs, files in os.walk(category_directory_path):
+    #     for file in files:
+    #         if file.endswith('.json'):
+    #             json_files_count += 1
+
+    cluster_directory_path = f'.././data/pakistan/{today_date}/clusters'
+    if not os.path.exists(cluster_directory_path):
+        os.makedirs(cluster_directory_path, exist_ok=True)
     
+    #if json_files_count >= 10:
     clusters_list: List = []
-    for cluster in [0, 1, 2]:
+    for cluster in range(3):
         df_cluster = df[df['cluster_transformers'] == cluster]
         df_cluster = df_cluster[columns_to_keep].rename(columns=rename_columns)
 
@@ -208,14 +222,13 @@ def get_clusters_list(df: pd.DataFrame, category: str, today_date: datetime) -> 
         json_objects_list: List[Dict[str: str]] = json.loads(json_data)
         
         if len(json_objects_list) <= 15:
-            directory_path: str = f'.././data/{today_date}/{category}/clusters'
-            if not os.path.exists(directory_path):
-                os.makedirs(directory_path)
-            file_no: int = get_next_file_number(directory_path)
-            filename: str = f'{directory_path}/{file_no}.json'
+            if not os.path.exists(category_directory_path):
+                os.makedirs(category_directory_path)
+            file_no: int = get_next_file_number(category_directory_path)
+            filename: str = f'{category_directory_path}/{file_no}.json'
 
-            if not os.path.exists(directory_path):
-                os.makedirs(directory_path, exist_ok=True)
+            if not os.path.exists(category_directory_path):
+                os.makedirs(category_directory_path, exist_ok=True)
 
             with open(filename, 'w') as file:
                 file.write(json_data)
@@ -224,11 +237,10 @@ def get_clusters_list(df: pd.DataFrame, category: str, today_date: datetime) -> 
 
         else:
             clusters_list.append(json_objects_list)
-    
     return clusters_list
 
 def process_clusters(category: str, today_date: datetime) -> None:
-    all_articles_json_list: list[Dict[str, Union[str, int, List[str]]]] = fetch_and_merge_json_files(f".././data/{today_date}/{category}/articles")
+    all_articles_json_list: list[Dict[str, Union[str, int, List[str]]]] = fetch_and_merge_json_files(f".././data/pakistan/{today_date}/categories/{category}")
     df: pd.DataFrame = get_clustered_dataframe(all_articles_json_list)
     limit_exceeded_clusters: List[List[Dict[str: str]]] = get_clusters_list(df, category, today_date)
     
@@ -243,17 +255,20 @@ def process_clusters(category: str, today_date: datetime) -> None:
 def main() -> None:
     today_date: datetime = datetime.now().strftime("%Y-%m-%d")
     #today_file_path = fetch_today_file(f".././data/{today_date}/business/articles")
-    categories: List[str] = ["business", "pakistan"]
+    #categories: List[str] = ["politics", "governance", "sports", "international relations", "business", "health", "science and technology", "culture", "security", "weather", "fashion", "energy", "others"]
+    categories: List[str] = ["politics", "business"]
     for category in categories:
         process_clusters(category, today_date)
 
 if __name__ == "__main__":
-    columns_to_keep: List[str] = ['title', 'authors', 'source', 'publish_date', 'url', 'text_cleaned']
+    columns_to_keep: List[str] = ['title', 'authors', 'source', 'url', 'text_cleaned']
     rename_columns: Dict[str, str] = {'text_cleaned': 'text'}
 
     model: SentenceTransformer = SentenceTransformer('all-MiniLM-L6-v2')
     nltk.download('punkt')
     nltk.download('stopwords')
+
+    
 
     main()
             #save_cluster_to_json(df, cluster, category)
@@ -269,4 +284,3 @@ if __name__ == "__main__":
     # plt.xlabel('K')
     # plt.ylabel('Sum of squared error')
     # plt.plot(k_rng,sse)
-    

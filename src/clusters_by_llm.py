@@ -12,6 +12,7 @@ load_dotenv()
 today_date = datetime.now().strftime("%Y-%m-%d")
 categories_dir = f'./../data/pakistan/{today_date}/categories'
 articles_dir = f".././data/pakistan/{today_date}/articles"
+raw_articles_dir = f".././data/pakistan/{today_date}/raw_articles"
 
 def json_directory_loader(dir_path):
     loader = DirectoryLoader(
@@ -97,4 +98,11 @@ for item in all_json_objects_list:
     else:
         print(f'Unknown category: {category}')
 
+# Check if the directory exists before attempting to delete
+# if os.path.exists(articles_dir):
+#     shutil.rmtree(articles_dir)
+#     print(f"Directory {articles_dir} and all its contents have been deleted.")
 
+# if os.path.exists(raw_articles_dir):
+#     shutil.rmtree(raw_articles_dir)
+#     print(f"Directory {raw_articles_dir} and all its contents have been deleted.")

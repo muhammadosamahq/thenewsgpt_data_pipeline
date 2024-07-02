@@ -53,7 +53,7 @@ def get_save_summary_stats(clusters_directory_path: List[str], summary_directory
         docs: List[Document] = json_load(cluster)
         #result = chain.invoke({"input": docs})
         summarization_result: Dict = summarization_chain.invoke(docs)
-
+        print("generated summary", id)
         metadata_list: List[Dict[str, Union[str, int, List[str]]]] = [obj for obj in meta]
         #len(metadata_list)
         filename: str = f'{summary_directory_path}/{id}.json'
@@ -62,18 +62,19 @@ def get_save_summary_stats(clusters_directory_path: List[str], summary_directory
 
         with open(filename, 'w') as json_file:
             json.dump(summery_dict, json_file, indent=4) 
+            print("saved summary", id)
         
         time.sleep(5)
 
 def main():
     today_date: datetime.date = datetime.now().date()
-    categories: list[str] = ["business", "pakistan"]
+    categories: List[str] = ["business", "politics"]
     for category in categories:
-        summary_directory_path: str = f'.././data/{today_date}/{category}/summary'
+        summary_directory_path: str = f'.././data/pakistan/{today_date}/summary/{category}'
         if not os.path.exists(summary_directory_path):
             os.makedirs(summary_directory_path)
 
-        clusters_directory_path: List[str] = get_all_file_paths(f".././data/{today_date}/{category}/clusters")
+        clusters_directory_path: List[str] = get_all_file_paths(f".././data/pakistan/{today_date}/clusters/{category}")
         get_save_summary_stats(clusters_directory_path, summary_directory_path)
 
 if __name__ == "__main__":
