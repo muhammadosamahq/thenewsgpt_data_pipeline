@@ -196,8 +196,8 @@ def get_clustered_dataframe(all_articles_json_list: list[Dict[str, Union[str, in
     return df
 
 def get_clusters_list(df: pd.DataFrame, category: str, today_date: datetime) -> List[List[Dict[str, str]]]:
-    columns_to_keep: List[str] = ['id', 'datetime','title', 'authors', 'url', 'text_cleaned']
-    rename_columns: Dict[str, str] = {'text_cleaned': 'text'}
+    columns_to_keep: List[str] = ['id', 'datetime','title', 'authors', 'url', 'text_cleaned', "text"]
+    #rename_columns: Dict[str, str] = {'text_cleaned': 'text'}
 
     category_directory_path: str = f'.././data/pakistan/{today_date}/clusters/{category}'
     json_files_count = 0
@@ -216,7 +216,7 @@ def get_clusters_list(df: pd.DataFrame, category: str, today_date: datetime) -> 
     clusters_list: List = []
     for cluster in range(3):
         df_cluster = df[df['cluster_transformers'] == cluster]
-        df_cluster = df_cluster[columns_to_keep].rename(columns=rename_columns)
+        df_cluster = df_cluster[columns_to_keep]#.rename(columns=rename_columns)
 
         json_data: str = df_cluster.to_json(orient='records', indent=4)
         json_objects_list: List[Dict[str: str]] = json.loads(json_data)
@@ -261,8 +261,8 @@ def main() -> None:
         process_clusters(category, today_date)
 
 if __name__ == "__main__":
-    columns_to_keep: List[str] = ['title', 'authors', 'source', 'url', 'text_cleaned']
-    rename_columns: Dict[str, str] = {'text_cleaned': 'text'}
+    columns_to_keep: List[str] = ['title', 'authors', 'source', 'url', 'text_cleaned', "text"]
+    #rename_columns: Dict[str, str] = {'text_cleaned': 'text'}
 
     model: SentenceTransformer = SentenceTransformer('all-MiniLM-L6-v2')
     nltk.download('punkt')

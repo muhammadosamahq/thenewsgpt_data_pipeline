@@ -43,17 +43,14 @@ def get_save_summary_stats(clusters_directory_path: List[str], summary_directory
     g_llm: GoogleGenerativeAI = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
 
     # Define prompt
-    prompt_template = """Write a comprehensive summary with proper headings of the following return as JSON:
+    prompt_template = """Write a comprehensive summary with proper headings of the following:
     "{text}"
-    {{
-        "Heading": "Pakistan Stock Exchange (PSX) Performance and Economic Developments,
-        "Summary": "key economic developments and their impact on the Pakistan Stock Exchange (PSX) during the first few days of the new fiscal year.\n\n**I. PSX Performance**\n\n* **First Day of Fiscal Year (July 3, 2023):..............."
-    }}
+    Heading&Summary: 
     """
     prompt = PromptTemplate.from_template(prompt_template)
 
     # Define LLM chain
-    llm_chain = LLMChain(llm=g_llm, prompt=prompt)
+    llm_chain = prompt | g_llm
 
     # Define StuffDocumentsChain
     summarization_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
