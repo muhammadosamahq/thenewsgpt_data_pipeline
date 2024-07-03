@@ -1,4 +1,6 @@
-from langchain_core.prompts import ChatPromptTemplate
+from langchain.chains.combine_documents.stuff import StuffDocumentsChain
+from langchain.chains.llm import LLMChain
+from langchain_core.prompts import PromptTemplate
 from datetime import datetime, timedelta
 from langchain_community.document_loaders import DirectoryLoader, JSONLoader
 from langchain_openai import ChatOpenAI
@@ -39,7 +41,25 @@ def json_load(file_path: str) -> List[str]:
 
 def get_save_summary_stats(clusters_directory_path: List[str], summary_directory_path: str) -> None:  
     g_llm: GoogleGenerativeAI = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
-    summarization_chain = load_summarize_chain(g_llm, chain_type="stuff")
+
+    # Define prompt
+    prompt_template = """Write a comprehensive summary with proper headings of the following return as JSON:
+    "{text}"
+    {{
+        "Heading": "Pakistan Stock Exchange (PSX) Performance and Economic Developments,
+        "Summary": "key economic developments and their impact on the Pakistan Stock Exchange (PSX) during the first few days of the new fiscal year.\n\n**I. PSX Performance**\n\n* **First Day of Fiscal Year (July 3, 2023):..............."
+    }}
+    """
+    prompt = PromptTemplate.from_template(prompt_template)
+
+    # Define LLM chain
+    llm_chain = LLMChain(llm=g_llm, prompt=prompt)
+
+    # Define StuffDocumentsChain
+    summarization_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
+
+    # g_llm: GoogleGenerativeAI = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
+    # summarization_chain = load_summarize_chain(g_llm, chain_type="stuff")
     
     for c, cluster in enumerate(clusters_directory_path):
         # Extract the last part of the path
