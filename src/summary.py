@@ -34,6 +34,29 @@ def json_load(file_path: str) -> List[str]:
                             )
     return loader.load()
 
+def is_json_file_not_empty(file_path):
+    # Check if the file exists
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"The file {file_path} does not exist.")
+
+    with open(file_path, 'r', encoding='utf-8') as file:
+        try:
+            data = json.load(file)
+        except json.JSONDecodeError:
+            # If the file cannot be decoded, it might be completely empty or malformed
+            return False
+    
+    # Check if the data is an empty object or array
+    if data == {} or data == []:
+        return False
+    
+    # Check if the file is completely empty
+    with open(file_path, 'r', encoding='utf-8') as file:
+        if file.read().strip() == '':
+            return False
+
+    return True
+
 # def convert_to_dict(string):
 #     data_dict = ast.literal_eval(string)
     
@@ -43,14 +66,13 @@ def get_save_summary_stats(clusters_directory_path: List[str], summary_directory
     g_llm: GoogleGenerativeAI = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
 
     # Define prompt
-    prompt_template = """Write a comprehensive summary with proper headings of the following:
-    "{text}"
-    Heading&Summary: 
+    prompt_template = """Write a comprehensive summary with proper heading of the following:
+    "{text}" 
     """
     prompt = PromptTemplate.from_template(prompt_template)
 
     # Define LLM chain
-    llm_chain = prompt | g_llm
+    llm_chain = LLMChain(llm=g_llm, prompt=prompt)
 
     # Define StuffDocumentsChain
     summarization_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
@@ -59,33 +81,38 @@ def get_save_summary_stats(clusters_directory_path: List[str], summary_directory
     # summarization_chain = load_summarize_chain(g_llm, chain_type="stuff")
     
     for c, cluster in enumerate(clusters_directory_path):
+        print(cluster)
         # Extract the last part of the path
         last_part: str = cluster.split('/')[-1]
 
         # Extract the number before .json
         id: str = last_part.split('.')[0]
 
-        with open(cluster, 'r', encoding='utf-8') as file:
-            meta: List[Dict[str, Union[str, int, List[str]]]] = json.load(file)
-        docs: List[Document] = json_load(cluster)
-        #result = chain.invoke({"input": docs})
-        summarization_result: Dict = summarization_chain.invoke(docs)
-        print("generated summary", id)
-        metadata_list: List[Dict[str, Union[str, int, List[str]]]] = [obj for obj in meta]
-        #len(metadata_list)
-        filename: str = f'{summary_directory_path}/{id}.json'
-        summery_dict: Dict[str, Union[str, List[Any]]] = {"summary": summarization_result["output_text"],
-                        "meta_data": metadata_list,}
-
-        with open(filename, 'w') as json_file:
-            json.dump(summery_dict, json_file, indent=4) 
-            print("saved summary", id)
+        json_file = is_json_file_not_empty(cluster)
+        if json_file:
+            with open(cluster, 'r', encoding='utf-8') as file:
+                meta: List[Dict[str, Union[str, int, List[str]]]] = json.load(file)
+            #print(meta)
         
-        time.sleep(5)
+            docs: List[Document] = json_load(cluster)
+            #result = chain.invoke({"input": docs})
+            summarization_result: Dict = summarization_chain.invoke(docs)
+            print("generated summary", id)
+            metadata_list: List[Dict[str, Union[str, int, List[str]]]] = [obj for obj in meta]
+            #len(metadata_list)
+            filename: str = f'{summary_directory_path}/{id}.json'
+            summery_dict: Dict[str, Union[str, List[Any]]] = {"summary": summarization_result["output_text"],
+                            "meta_data": metadata_list,}
+
+            with open(filename, 'w') as json_file:
+                json.dump(summery_dict, json_file, indent=4) 
+                print("saved summary", id)
+            
+            time.sleep(5)
 
 def main():
     today_date: datetime.date = datetime.now().date()
-    categories: List[str] = ["business", "politics"]
+    categories: List[str] = ["politics", "governance", "sports", "international relations", "business", "health", "science and technology", "culture", "security", "weather", "fashion", "energy", "others"]
     for category in categories:
         summary_directory_path: str = f'.././data/pakistan/{today_date}/summary/{category}'
         if not os.path.exists(summary_directory_path):

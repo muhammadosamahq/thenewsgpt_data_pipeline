@@ -19,14 +19,14 @@ if __name__ == "__main__":
     st.set_page_config(page_title="News Summary", page_icon="💁")
     st.header("A bot for latest Pakistani news💁")
     today_date = datetime.now().strftime("%Y-%m-%d")
-    categories = ["business", "pakistan"]
+    categories = ["business", "politics"]
 
     for category in categories:
 
         # summaries_path = get_all_file_paths(f".././data/2024-06-28/{category}/summary")
-        summaries_path = get_all_file_paths(f".././testing/summary")
+        summaries_path = get_all_file_paths(f".././data/pakistan/{today_date}/summary/{category}")
         # stats_path = get_all_file_paths(f".././data/2024-06-28/{category}/stats")
-        stats_path = get_all_file_paths(f".././testing/{category}")
+        stats_path = get_all_file_paths(f".././data/pakistan/{today_date}/stats/{category}")
 
 
         for cluster, stats in zip(summaries_path, stats_path):

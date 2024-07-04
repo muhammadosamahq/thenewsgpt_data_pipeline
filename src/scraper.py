@@ -46,8 +46,6 @@ def get_filtered_url(url: str) -> str:
 def standardize_date(raw_date):
     raw_date = raw_date.strip()
     print(raw_date)
-    
-
     try:
         date = dateparser.parse(raw_date).strftime("%Y-%m-%d")
         print(date)
@@ -103,26 +101,14 @@ def get_url_meta_data(soup, object):
 
     return get_url_meta_data_list
 
-def save_article_data(url, category):
-    try:     
-        counter += 1   
-        print("successful... Date under range", date, counter)
-        print(url)
-        obj["id"] = counter
-        article_data: Dict[str, Union[str, List[str]]] = newspaper_tool.get_article_data(url)
-        obj["authors"] = article_data["authors"]
-        obj["text"] = article_data["text"]
-        obj["publish_date"] = article_data["publish_date"]
-        with open(f'.././data/{today_date}/{category}/articles/{counter}_article_{object["source"]}.json', 'w') as json_file:
-            json.dump(obj, json_file, indent=4)
-            print("file saved successfully")
-        time.sleep(2)
-    except Exception as e:
-        print(f"Error processing article {url}: {e}")
-        #continue
-
 if __name__ == "__main__":
+    business_json_path = '.././urls/business_urls_updated.json'
+    pakistan_json_path = '.././urls/pakistan_urls_updated.json'
+    urls_info = []
     data = []
+    counter = 0
+
+    categories: List[str] = ["politics", "governance", "sports", "international relations", "business", "health", "science and technology", "culture", "security", "weather", "fashion", "energy", "others"]
     
     pagination_sources_list: List[str] = ["propakistani", "theexpresstribune", "hum", "92news", "abbtakk"]
 
@@ -131,59 +117,24 @@ if __name__ == "__main__":
     today_date: datetime = datetime.now().strftime("%Y-%m-%d")
     yesterday_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
 
-    categories: List[str] = ["business", "pakistan"]
-    for category in categories:
-        counter = 0
-        directory_path: str = f".././data/pakistan/{today_date}/raw_articles"
-        #pakistan_directory_path = f".././data/{today_date}/pakistan/articles"
-        if not os.path.exists(directory_path):
-            os.makedirs(directory_path, exist_ok=True)
+    # Load business_json
+    with open(business_json_path, 'r', encoding='utf-8') as business_file:
+        business_data = json.load(business_file)
+        urls_info.extend(business_data)  # Extend combined_data with business_data
 
-        with open(f".././urls/{category}_urls_updated.json", 'r') as file:
-            urls_info = json.load(file)
+    # Load pakistan_json
+    with open(pakistan_json_path, 'r', encoding='utf-8') as pakistan_file:
+        pakistan_data = json.load(pakistan_file)
+        urls_info.extend(pakistan_data) 
 
-        for c, object in enumerate(urls_info):
-            print(object["source"])
-            print(c)
-            if object["source"] in pagination_sources_list:
-                for page in range(1, 6):
-                    try:
-                        status, soup = get_status_code_and_soup(object["url"] + str(page))
-                        if status == 200:
-                            url_meta_data = get_url_meta_data(soup, object)
-                            print("len of urls", len(url_meta_data))
-                            for obj in url_meta_data:
-                                print(obj["url"])
-                                print(obj["datetime"])
-                                date = standardize_date(obj["datetime"])
-                                if date == yesterday_date:
-                                    url = get_filtered_url(obj["url"])
-                                    if url:
-                                        try:     
-                                            counter += 1   
-                                            print("successful... Date under range", date, counter)
-                                            print(url)
-                                            #obj["id"] = counter
-                                            article_data: Dict[str, Union[str, List[str]]] = newspaper_tool.get_article_data(url)
-                                            obj["authors"] = article_data["authors"]
-                                            obj["source"] = object["source"]
-                                            obj["text"] = article_data["text"]
-                                            obj["datetime"] = date
-                                            with open(f'.././data/pakistan/{today_date}/raw_articles/{counter}_article_{object["source"]}.json', 'w') as json_file:
-                                                json.dump(obj, json_file, indent=4)
-                                                print("file saved successfully")
-                                            time.sleep(2)
-                                        except Exception as e:
-                                            print(f"Error processing article {url}: {e}")
-                                        continue
-                        time.sleep(1)
-                    except Exception as e:
-                        print(f"Raise error: {e}")
-
-
-            else:
+    
+    for c, object in enumerate(urls_info):
+        print(object["source"])
+        print(c)
+        if object["source"] in pagination_sources_list:
+            for page in range(1, 6):
                 try:
-                    status, soup = get_status_code_and_soup(object["url"])
+                    status, soup = get_status_code_and_soup(object["url"] + str(page))
                     if status == 200:
                         url_meta_data = get_url_meta_data(soup, object)
                         print("len of urls", len(url_meta_data))
@@ -211,7 +162,44 @@ if __name__ == "__main__":
                                     except Exception as e:
                                         print(f"Error processing article {url}: {e}")
                                     continue
-
-                        time.sleep(1)
+                    time.sleep(1)
                 except Exception as e:
                     print(f"Raise error: {e}")
+
+
+        else:
+            try:
+                status, soup = get_status_code_and_soup(object["url"])
+                if status == 200:
+                    url_meta_data = get_url_meta_data(soup, object)
+                    print("len of urls", len(url_meta_data))
+                    for obj in url_meta_data:
+                        print(obj["url"])
+                        print(obj["datetime"])
+                        date = standardize_date(obj["datetime"])
+                        if date == yesterday_date:
+                            url = get_filtered_url(obj["url"])
+                            if url:
+                                try:     
+                                    counter += 1   
+                                    print("successful... Date under range", date, counter)
+                                    print(url)
+                                    #obj["id"] = counter
+                                    article_data: Dict[str, Union[str, List[str]]] = newspaper_tool.get_article_data(url)
+                                    obj["authors"] = article_data["authors"]
+                                    obj["source"] = object["source"]
+                                    obj["text"] = article_data["text"]
+                                    obj["datetime"] = date
+                                    with open(f'.././data/pakistan/{today_date}/raw_articles/{counter}_article_{object["source"]}.json', 'w') as json_file:
+                                        json.dump(obj, json_file, indent=4)
+                                        print("file saved successfully")
+                                    time.sleep(2)
+                                except Exception as e:
+                                    print(f"Error processing article {url}: {e}")
+                                continue
+
+                    time.sleep(1)
+            except Exception as e:
+                print(f"Raise error: {e}")
+
+    
