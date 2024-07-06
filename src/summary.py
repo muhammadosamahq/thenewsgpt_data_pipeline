@@ -66,20 +66,27 @@ def get_save_summary_stats(clusters_directory_path: List[str], summary_directory
     g_llm: GoogleGenerativeAI = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
 
     # Define prompt
-    prompt_template = """Write a comprehensive summary with proper heading of the following:
+    summary_prompt_template = """Write a comprehensive summary of the following:
     "{text}" 
+    Summary:
     """
-    prompt = PromptTemplate.from_template(prompt_template)
+    heading_prompt_template = """Write a clear and proper heading of following given summary return only most relevent one:
+    "{text}" 
+    Heading:
+    """
+
+    summary_prompt = PromptTemplate.from_template(summary_prompt_template)
+    heading_prompt = PromptTemplate.from_template(heading_prompt_template)
 
     # Define LLM chain
-    llm_chain = LLMChain(llm=g_llm, prompt=prompt)
+    summary_llm_chain = LLMChain(llm=g_llm, prompt=summary_prompt)
+    heading_llm_chain = heading_prompt | g_llm
 
     # Define StuffDocumentsChain
-    summarization_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
+    summarization_chain = StuffDocumentsChain(llm_chain=summary_llm_chain, document_variable_name="text")
 
     # g_llm: GoogleGenerativeAI = GoogleGenerativeAI(temperature=0, google_api_key=os.getenv("GOOGLE_API_KEY"), model="gemini-1.5-flash-latest")
     # summarization_chain = load_summarize_chain(g_llm, chain_type="stuff")
-    
     for c, cluster in enumerate(clusters_directory_path):
         print(cluster)
         # Extract the last part of the path
@@ -97,17 +104,26 @@ def get_save_summary_stats(clusters_directory_path: List[str], summary_directory
             docs: List[Document] = json_load(cluster)
             #result = chain.invoke({"input": docs})
             summarization_result: Dict = summarization_chain.invoke(docs)
+            time.sleep(3)
+            heading_result = heading_llm_chain.invoke({"text": summarization_result["output_text"]})
             print("generated summary", id)
             metadata_list: List[Dict[str, Union[str, int, List[str]]]] = [obj for obj in meta]
+            for idx, meta in enumerate(metadata_list):
+                meta["id"] = idx
+                
             #len(metadata_list)
             filename: str = f'{summary_directory_path}/{id}.json'
-            summery_dict: Dict[str, Union[str, List[Any]]] = {"summary": summarization_result["output_text"],
+
+            summery_dict: Dict[str, Union[str, List[Any]]] = {
+                            "id": int(id),
+                            "heading": heading_result,
+                            "summary": summarization_result["output_text"],
                             "meta_data": metadata_list,}
 
             with open(filename, 'w') as json_file:
                 json.dump(summery_dict, json_file, indent=4) 
                 print("saved summary", id)
-            
+
             time.sleep(5)
 
 def main():

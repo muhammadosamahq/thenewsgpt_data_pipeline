@@ -28,7 +28,7 @@ import ast  # convert string to dict
 import time
 
 
-from scraper import process_each_category_data, get_filtered_url, standardize_date, get_status_code_and_soup
+from extra_files.scraper import *
 from cluster import *
 from summary import *
 from stats import *
@@ -152,7 +152,79 @@ if __name__ == "__main__":
         urls_info.extend(pakistan_data)
 
     # Process each category data using functions from stats.py
-    process_each_category_data(urls_info, pagination_sources_list)
+    for c, object in enumerate(urls_info):
+        print(object["source"])
+        print(c)
+        if object["source"] in pagination_sources_list:
+            for page in range(1, 6):
+                try:
+                    status, soup = get_status_code_and_soup(object["url"] + str(page))
+                    if status == 200:
+                        url_meta_data = get_url_meta_data(soup, object)
+                        print("len of urls", len(url_meta_data))
+                        for obj in url_meta_data:
+                            print(obj["url"])
+                            print(obj["datetime"])
+                            date = standardize_date(obj["datetime"])
+                            if date == yesterday_date:
+                                url = get_filtered_url(obj["url"])
+                                if url:
+                                    try:     
+                                        counter += 1   
+                                        print("successful... Date under range", date, counter)
+                                        print(url)
+                                        #obj["id"] = counter
+                                        article_data: Dict[str, Union[str, List[str]]] = newspaper_tool.get_article_data(url)
+                                        obj["authors"] = article_data["authors"]
+                                        obj["source"] = object["source"]
+                                        obj["text"] = article_data["text"]
+                                        obj["datetime"] = date
+                                        with open(f'.././data/pakistan/{today_date}/raw_articles/{counter}_article_{object["source"]}.json', 'w') as json_file:
+                                            json.dump(obj, json_file, indent=4)
+                                            print("file saved successfully")
+                                        time.sleep(2)
+                                    except Exception as e:
+                                        print(f"Error processing article {url}: {e}")
+                                    continue
+                    time.sleep(1)
+                except Exception as e:
+                    print(f"Raise error: {e}")
+
+
+        else:
+            try:
+                status, soup = get_status_code_and_soup(object["url"])
+                if status == 200:
+                    url_meta_data = get_url_meta_data(soup, object)
+                    print("len of urls", len(url_meta_data))
+                    for obj in url_meta_data:
+                        print(obj["url"])
+                        print(obj["datetime"])
+                        date = standardize_date(obj["datetime"])
+                        if date == yesterday_date:
+                            url = get_filtered_url(obj["url"])
+                            if url:
+                                try:     
+                                    counter += 1   
+                                    print("successful... Date under range", date, counter)
+                                    print(url)
+                                    #obj["id"] = counter
+                                    article_data: Dict[str, Union[str, List[str]]] = newspaper_tool.get_article_data(url)
+                                    obj["authors"] = article_data["authors"]
+                                    obj["source"] = object["source"]
+                                    obj["text"] = article_data["text"]
+                                    obj["datetime"] = date
+                                    with open(f'.././data/pakistan/{today_date}/raw_articles/{counter}_article_{object["source"]}.json', 'w') as json_file:
+                                        json.dump(obj, json_file, indent=4)
+                                        print("file saved successfully")
+                                    time.sleep(2)
+                                except Exception as e:
+                                    print(f"Error processing article {url}: {e}")
+                                continue
+
+                    time.sleep(1)
+            except Exception as e:
+                print(f"Raise error: {e}")
 
     # columns_to_keep = ['title', 'authors', 'source', 'publish_date', 'url', 'text_cleaned']
     # rename_columns = {'text_cleaned': 'text'}

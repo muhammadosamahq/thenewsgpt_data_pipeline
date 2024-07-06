@@ -86,7 +86,7 @@
         "url": "https://www.pakistantoday.com.pk/category/national/",
         "urls_attr": "entry-title td-module-title",
         "title_attr": "tdb-title-text",
-        "content_attr": "td_block_wrap tdb_single_content tdi_41 td-pb-border-top td_block_template_1 td-post-content tagdiv-type",
+        "content_attr": "td_block_wrap tdb_single_content tdi_45 td-pb-border-top td_block_template_1 td-post-content tagdiv-type",
         "date_attr": "entry-date updated td-module-date"
     },
     {
@@ -168,7 +168,7 @@
         "urls_attr": "entry-title",
         "title_attr": "entry-title",
         "content_attr": "penci-entry-content",
-        "date_attr": "None"
+        "date_attr": "entry-date"
     }
 ]
 

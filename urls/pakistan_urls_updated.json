@@ -6,6 +6,7 @@
         "object_attr": ["div", "class", "list"],
         "href_attr": "border-box",
         "title_attr": "entry-title",
+        "content_attr": "story-area",
         "date_attr": "date"
     },
     {
@@ -15,6 +16,7 @@
         "object_attr": ["div", "class", "row"],
         "href_attr": "entry-title",
         "title_attr": "entry-title",
+        "content_attr": "the-post-content",
         "date_attr": "posted-on"
     },
     {
@@ -24,6 +26,7 @@
         "object_attr": ["div", "class", "col-sm-6"], 
         "href_attr": "tt-post",
         "title_attr": "h3-md",
+        "content_attr": "news-detail-content-class",
         "date_attr": "col-lg-12"
     },
     {
@@ -33,6 +36,7 @@
         "object_attr": ["article", "class", "story"], 
         "href_attr": "media__item",
         "title_attr": "story__title",
+        "content_attr": "story__content",
         "date_attr": "timestamp--time"
     },
     {
@@ -42,6 +46,7 @@
         "object_attr": ["div", "class", "sm:w-2/3"],
         "href_attr": "story__title",
         "title_attr": "story__title",
+        "content_attr": "story__content",
         "date_attr": "timestamp--time"
     },
     {
@@ -51,6 +56,7 @@
         "object_attr": ["div", "class", "td_module_10"], 
         "href_attr": "td-module-title",
         "title_attr": "td-module-title",
+        "content_attr": "td_block_wrap tdb_single_content tdi_45 td-pb-border-top td_block_template_1 td-post-content tagdiv-type",
         "date_attr": "td-post-date"
     },
     {
@@ -69,6 +75,7 @@
         "object_attr": ["article", "class", "jeg_post"], 
         "href_attr": "jeg_post_title",
         "title_attr": "jeg_post_title",
+        "content_attr": "content-inner",
         "date_attr": "jeg_meta_date"
     },
     {
@@ -78,6 +85,7 @@
         "object_attr": ["div", "class", "row"], 
         "href_attr": "horiz-news3-caption",
         "title_attr": "title-heading",
+        "content_attr": "story-text",
         "date_attr": "morestories-author"
     },
     {
@@ -87,6 +95,7 @@
         "object_attr": ["div", "class", "card__post__content"], 
         "href_attr": "card__post__title",
         "title_attr": "card__post__title",
+        "content_attr": "has-drop-cap-fluid",
         "date_attr": "text-dark text-capitalize"
     },
     {
@@ -96,6 +105,7 @@
         "object_attr": ["div", "class", "col-sm-6"], 
         "href_attr": "no-attr-href",
         "title_attr": "title",
+        "content_attr": "content_detail",
         "date_attr": "published_time"
     },
     {
@@ -105,6 +115,7 @@
         "object_attr": ["div", "class", "article_content"], 
         "href_attr": "entry-media",
         "title_attr": "entry-title",
+        "content_attr": "penci-entry-content",
         "date_attr": "entry-date"
     }
 

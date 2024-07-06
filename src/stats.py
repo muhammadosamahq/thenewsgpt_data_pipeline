@@ -88,48 +88,12 @@ def get_chain():
     chain = prompt | llm
     return chain
 
-# json_schema_prompt = ChatPromptTemplate.from_messages(
-#     [
-#         (
-#             "system",
-#             '''You are responsible for extracting all JSON objects from the given context in the following format:
-#             all_json_object_list = [
-#                 {{
-#                     "object": "comprehensive and clear title of the object",
-#                     "headings": [], 
-#                     "data": []
-#                 }},
-#                 {{
-#                     "object": "comprehensive and clear title of the object",
-#                     "headings": [], 
-#                     "data": []
-#                 }},
-#                 {{
-#                     "object": "comprehensive and clear title of the object",
-#                     "headings": [], 
-#                     "data": []
-#                 }},
-#                 {{
-#                     "object": "comprehensive and clear title of the object",
-#                     "headings": [], 
-#                     "data": []
-#                 }}
-#             ]
-#             Note: you have to keep with this schema at any cost. If there is no JSON object, then just return None.'''
-#         ),
-#         ("human", "{input}")
-#     ]
-# )
-
-
-#json_schema_chain = json_schema_prompt | llm
-
 def create_stats(category, clusters_directory_path):
     stats_chain = get_chain()
     today_date = datetime.now().date()
-    directory_path = f'.././data/pakistan/{today_date}/stats/{category}'
-    if not os.path.exists(directory_path):
-        os.makedirs(directory_path)
+    # directory_path = f'.././data/pakistan/{today_date}/stats/{category}'
+    # if not os.path.exists(directory_path):
+    #     os.makedirs(directory_path)
 
     all_json_objects_list = []
 
@@ -164,7 +128,7 @@ def create_stats(category, clusters_directory_path):
                     #print(summary)
                     ##print(all_json_objects_list)
 
-                    with open(f'../data/pakistan/{today_date}/stats/{category}/{id}.json', 'w') as file:
+                    with open(f'.././data/pakistan/{today_date}/summary/{category}/{id}.json', 'w') as file:
                         json.dump(summary, file, indent=4)
                     # with open(f'../data/pakistan/{today_date}/stats/{category}/{id}.json', 'w', encoding='utf-8') as file:
                     #     json.dump(summary, file, ensure_ascii=False, indent=4)

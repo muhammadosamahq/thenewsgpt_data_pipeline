@@ -1,5 +1,6 @@
 import os
 import json
+import shutil
 from datetime import datetime
 
 today_date = datetime.now().strftime("%Y-%m-%d")
@@ -55,6 +56,12 @@ def filter_articles():
 
     print(f"Total files in raw_articles: {raw_files_count}")
     print(f"Total unique articles saved: {articles_count}")
+    if len(os.listdir(articles_dir)) == articles_count:
+        # Remove the directory and all its contents
+        shutil.rmtree(raw_articles_dir)
+        print("raw_artilces directory deleted")
+    else:
+        print("no of articles are not same in articles directory with unique artilces (filtered articles)")
 
 if __name__ == "__main__":
     filter_articles()

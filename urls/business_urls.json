@@ -68,7 +68,7 @@
         "url": "https://profit.pakistantoday.com.pk/category/top-news-updates/",
         "urls_attr": "entry-title td-module-title",
         "title_attr": "tdb-title-textk",
-        "content_attr": "markdown",
+        "content_attr": "td_block_wrap tdb_single_content tdi_40 td-pb-border-top td_block_template_1 td-post-content tagdiv-type",
         "date_attr": "entry-date"
     },
     {
@@ -159,7 +159,7 @@
         "urls_attr": "entry-title",
         "title_attr": "entry-title",
         "content_attr": "penci-entry-content",
-        "date_attr": "None"
+        "date_attr": "entry-meta-item penci-posted-on"
     }
 ]
 
