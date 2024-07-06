@@ -19,24 +19,23 @@ today_date = datetime.now().date()
 def flatten_list(nested_list):
     return [item for sublist in nested_list for item in (sublist if isinstance(sublist, list) else [sublist])]
 
-categories: List[str] = ["politics", "business"]
+categories: List[str] = ["politics", "governance", "sports", "international relations", "business", "health", "science and technology", "culture", "security", "weather", "fashion", "energy", "others"]
 
 for category in categories:
     
     # Directory containing the stats JSON files
-    stats_directory_path = get_all_file_paths(f".././data/pakistan/{today_date}/stats/{category}")
+    stats_directory_path = get_all_file_paths(f".././data/pakistan/{today_date}/summary/{category}")
     print(stats_directory_path)
 
     # Directory to save filtered JSON files
-    directory = f'.././data/pakistan/{today_date}/stats/{category}'
-
-    # Create the testing folder if it doesn't exist
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    save_directory = f".././data/pakistan/{today_date}/summary/{category}"
 
     for stat in stats_directory_path:
+        print(stat)
         with open(stat, 'r', encoding='utf-8') as file:
-            stats_json_list = json.load(file)
+            summary = json.load(file)
+        
+        stats_json_list = summary.get('stats', [])
 
         # Check each object in stats_json_list
         filtered_stats = []
@@ -63,11 +62,13 @@ for category in categories:
 
         # Save the filtered list to a new file in the testing folder
         base_filename = os.path.basename(stat)
-        new_filename = os.path.join(directory, base_filename)
+        new_filename = os.path.join(save_directory, base_filename)
 
-        with open(new_filename, 'w', encoding='utf-8') as outfile:
-            json.dump(filtered_stats, outfile, indent=4)
+        summary["stats"] = filtered_stats
+        with open(new_filename, 'w') as json_file:
+            json.dump(summary, json_file, indent=4) 
 
         print(f"Processed {stat}")
         print(f"Filtered results saved to {new_filename}")
         print(f"Original length: {len(stats_json_list)}, Filtered length: {len(filtered_stats)}")
+ 
