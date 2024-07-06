@@ -9,16 +9,6 @@ import shutil
 
 load_dotenv()
 
-category_counts = {}
-
-today_date = datetime.now().strftime("%Y-%m-%d")
-categories_dir = f'./../data/pakistan/{today_date}/categories'
-articles_dir = f".././data/pakistan/{today_date}/articles"
-raw_articles_dir = f".././data/pakistan/{today_date}/raw_articles"
-
-if not os.path.exists(categories_dir):
-    os.makedirs(categories_dir, exist_ok=True)
-
 def json_directory_loader(dir_path):
     loader = DirectoryLoader(
         dir_path, 
@@ -31,7 +21,7 @@ def json_directory_loader(dir_path):
     return documents
 
 # Function to move JSON files to category folders
-def move_article_to_category_folder(article_id, category):
+def move_article_to_category_folder(articles_dir, categories_dir, article_id, category):
     src_filepath = os.path.join(articles_dir, f'{article_id}.json')
     if os.path.exists(src_filepath):
         dest_dir = os.path.join(categories_dir, category)
@@ -63,10 +53,11 @@ def cluster_chain():
     chain = prompt | llm
     return chain
 
-def cluster_articles_by_llm(categories, docs, chain):
-    for category in categories:
-        if not os.path.exists(os.path.join(categories_dir, category)):
-            os.makedirs(os.path.join(categories_dir, category), exist_ok=True)
+def get_clusters_by_llm(categories, docs, chain):
+    category_counts = {}
+    #for category in categories:
+        # if not os.path.exists(os.path.join(categories_dir, category)):
+        #     os.makedirs(os.path.join(categories_dir, category), exist_ok=True)
 
     print("llm processing....")
     result = chain.invoke({"input": docs})
@@ -85,16 +76,11 @@ def cluster_articles_by_llm(categories, docs, chain):
     # Display the counts
     for category, count in category_counts.items():
         print(f"{category}: {count}")
+    
+    return all_json_objects_list
 
 
-    # Iterate through the list and move JSON files to respective category folders
-    for item in all_json_objects_list:
-        article_id = item['id']
-        category = item['category']
-        if category in categories:
-            move_article_to_category_folder(article_id, category)
-        else:
-            print(f'Unknown category: {category}')
+
 
     # Check if the directory exists before attempting to delete
     # if os.path.exists(articles_dir):
@@ -107,6 +93,25 @@ def cluster_articles_by_llm(categories, docs, chain):
 
 if __name__ == "__main__":
     categories = ["politics", "governance", "sports", "international relations", "business", "health", "science and technology", "culture", "security", "weather", "fashion", "energy", "entertainment", "others"]
+    category_counts = {}
+
+    today_date = datetime.now().strftime("%Y-%m-%d")
+    categories_dir = f'./../data/pakistan/{today_date}/categories'
+    articles_dir = f".././data/pakistan/{today_date}/articles"
+    raw_articles_dir = f".././data/pakistan/{today_date}/raw_articles"
+
+    if not os.path.exists(categories_dir):
+        os.makedirs(categories_dir, exist_ok=True)
+    
     docs = json_directory_loader(articles_dir)
     chain = cluster_chain()
-    cluster_articles_by_llm(categories, docs, chain)
+    all_json_objects_list = get_clusters_by_llm(categories, docs, chain)
+    
+    # Iterate through the list and move JSON files to respective category folders
+    for item in all_json_objects_list:
+        article_id = item['id']
+        category = item['category']
+        if category in categories:
+            move_article_to_category_folder(article_id, category)
+        else:
+            print(f'Unknown category: {category}')

@@ -201,7 +201,7 @@ def main() -> None:
         process_clusters(category, today_date)
 
 if __name__ == "__main__":
-    columns_to_keep: List[str] = ['title', 'authors', 'source', 'url', 'text_cleaned', "text"]
+    #columns_to_keep: List[str] = ['title', 'authors', 'source', 'url', 'text_cleaned', "text"]
     #rename_columns: Dict[str, str] = {'text_cleaned': 'text'}
 
     model: SentenceTransformer = SentenceTransformer('all-MiniLM-L6-v2')

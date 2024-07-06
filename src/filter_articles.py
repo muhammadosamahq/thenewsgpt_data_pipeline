@@ -3,26 +3,17 @@ import json
 import shutil
 from datetime import datetime
 
-today_date = datetime.now().strftime("%Y-%m-%d")
-
-# Set the directories
-raw_articles_dir = f'./../data/pakistan/{today_date}/raw_articles'
-articles_dir = f'./../data/pakistan/{today_date}/articles'
-
-# Create the articles directory if it doesn't exist
-if not os.path.exists(articles_dir):
-    os.makedirs(articles_dir, exist_ok=True)
-
-# Dictionary to track URLs and corresponding file paths
-url_tracker = {}
-unique_articles = []
 
 
-# List to keep track of processed files
-processed_files = []
-
-def filter_articles():
+def filter_articles(raw_articles_dir, articles_dir):
     current_id = 1
+    # Dictionary to track URLs and corresponding file paths
+    url_tracker = {}
+    unique_articles = []
+
+    # List to keep track of processed files
+    processed_files = []
+    
     # Iterate through each JSON file in the raw_articles directory
     for filename in os.listdir(raw_articles_dir):
         if filename.endswith('.json'):
@@ -64,4 +55,21 @@ def filter_articles():
         print("no of articles are not same in articles directory with unique artilces (filtered articles)")
 
 if __name__ == "__main__":
-    filter_articles()
+    today_date = datetime.now().strftime("%Y-%m-%d")
+
+    # Set the directories
+    raw_articles_dir = f'./../data/pakistan/{today_date}/raw_articles'
+    articles_dir = f'./../data/pakistan/{today_date}/articles'
+
+    # Create the articles directory if it doesn't exist
+    if not os.path.exists(articles_dir):
+        os.makedirs(articles_dir, exist_ok=True)
+
+    # Dictionary to track URLs and corresponding file paths
+    url_tracker = {}
+    unique_articles = []
+
+
+    # List to keep track of processed files
+    processed_files = []
+    filter_articles(raw_articles_dir, articles_dir)

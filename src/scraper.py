@@ -101,8 +101,8 @@ def get_url_meta_data(soup, object):
 
     return get_url_meta_data_list
 
-def article_processing(articles_meta_data, counter):
-    
+def article_processing(articles_meta_data, counter, yesterday_date, object, today_date):
+    newspaper_tool: Newspaper4k = Newspaper4k()
     for obj in articles_meta_data:
         print(obj["url"])
         print(obj["datetime"])
@@ -134,6 +134,10 @@ if __name__ == "__main__":
     today_date: datetime = datetime.now().strftime("%Y-%m-%d")
     yesterday_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
 
+    raw_articles_directory_path = f'.././data/pakistan/{today_date}/raw_articles'
+    if not os.path.exists(raw_articles_directory_path):
+        os.makedirs(raw_articles_directory_path)
+
     business_json_path = '.././urls/business_urls_updated.json'
     pakistan_json_path = '.././urls/pakistan_urls_updated.json'
     urls_info = []
@@ -149,7 +153,7 @@ if __name__ == "__main__":
     #     if not os.path.exists(directory_path):
     #         os.makedirs(directory_path, exist_ok=True)
 
-    newspaper_tool: Newspaper4k = Newspaper4k()
+    
 
     # Load business_json
     with open(business_json_path, 'r', encoding='utf-8') as business_file:
@@ -172,7 +176,7 @@ if __name__ == "__main__":
                     if status == 200:
                         articles_meta_data = get_url_meta_data(soup, object)
                         print("len of urls", len(articles_meta_data))
-                        counter = article_processing(articles_meta_data, counter)
+                        counter = article_processing(articles_meta_data, counter, yesterday_date, today_date)
                     time.sleep(1)
                 except Exception as e:
                     print(f"Raise error: {e}")
@@ -182,7 +186,7 @@ if __name__ == "__main__":
                 if status == 200:
                     articles_meta_data = get_url_meta_data(soup, object)
                     print("len of urls", len(articles_meta_data))
-                    counter = article_processing(articles_meta_data, counter)
+                    counter = article_processing(articles_meta_data, counter, yesterday_date)
 
                     time.sleep(1)
             except Exception as e:
