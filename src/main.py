@@ -36,6 +36,9 @@ from filter_articles import *
 from filter_stats import *
 from clusters_by_llm import *
 
+today_date = datetime.now().strftime("%Y-%m-%d")
+yesterday_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+
 raw_articles_dir = f'./../data/pakistan/{today_date}/raw_articles'
 articles_dir = f'./../data/pakistan/{today_date}/articles'
 categories_dir = f'./../data/pakistan/{today_date}/categories'
@@ -99,8 +102,6 @@ def process_clusters(category: str, today_date: datetime) -> None:
         print(f"Data saved to {filename}")
 
 if __name__ == "__main__":
-    today_date = datetime.now().strftime("%Y-%m-%d")
-    yesterday_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
 
     counter = 0
 
@@ -250,22 +251,3 @@ if __name__ == "__main__":
             print(f"Filtered results saved to {new_filename}")
             print(f"Original length: {len(stats_json_list)}, Filtered length: {len(filtered_stats)}")
  
-
-    # columns_to_keep = ['title', 'authors', 'source', 'publish_date', 'url', 'text_cleaned']
-    # rename_columns = {'text_cleaned': 'text'}
-
-    # model = SentenceTransformer('all-MiniLM-L6-v2')
-    # nltk.download('punkt')
-    # nltk.download('stopwords')
-
-    # for category in categories:
-        
-    #     fetch_save_articles(urls_info, category, today_date)
-
-    #     process_clusters(category, today_date)
-
-    #     clusters_directory_path = get_all_file_paths(f".././data/{today_date}/{category}/clusters")
-    #     summary_directory_path = f'.././data/{today_date}/{category}/summary'
-    #     get_save_summary_stats(clusters_directory_path, summary_directory_path)
-
-    #     create_stats(category, clusters_directory_path)
