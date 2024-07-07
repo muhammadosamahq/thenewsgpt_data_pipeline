@@ -131,31 +131,31 @@ if __name__ == "__main__":
         urls_info.extend(pakistan_data)
 
     # # scraper.py 
-    # for c, object in enumerate(urls_info):
-    #     print(object["source"])
-    #     print(c)
-    #     if object["source"] in pagination_sources_list:
-    #         for page in range(1, 6):
-    #             try:
-    #                 status, soup = get_status_code_and_soup(object["url"] + str(page))
-    #                 if status == 200:
-    #                     articles_meta_data = get_url_meta_data(soup, object)
-    #                     print("len of urls", len(articles_meta_data))
-    #                     counter = article_processing(articles_meta_data, counter)
-    #                 time.sleep(1)
-    #             except Exception as e:
-    #                 print(f"Raise error: {e}")
-    #     else:
-    #         try:
-    #             status, soup = get_status_code_and_soup(object["url"])
-    #             if status == 200:
-    #                 articles_meta_data = get_url_meta_data(soup, object)
-    #                 print("len of urls", len(articles_meta_data))
-    #                 counter = article_processing(articles_meta_data, counter)
+    for c, object in enumerate(urls_info):
+        print(object["source"])
+        print(c)
+        if object["source"] in pagination_sources_list:
+            for page in range(1, 6):
+                try:
+                    status, soup = get_status_code_and_soup(object["url"] + str(page))
+                    if status == 200:
+                        articles_meta_data = get_url_meta_data(soup, object)
+                        print("len of urls", len(articles_meta_data))
+                        counter = article_processing(articles_meta_data, counter)
+                    time.sleep(1)
+                except Exception as e:
+                    print(f"Raise error: {e}")
+        else:
+            try:
+                status, soup = get_status_code_and_soup(object["url"])
+                if status == 200:
+                    articles_meta_data = get_url_meta_data(soup, object)
+                    print("len of urls", len(articles_meta_data))
+                    counter = article_processing(articles_meta_data, counter)
 
-    #                 time.sleep(1)
-    #         except Exception as e:
-    #             print(f"Raise error: {e}")
+                    time.sleep(1)
+            except Exception as e:
+                print(f"Raise error: {e}")
 
     # filter_articles.py
     filter_articles(raw_articles_dir, articles_dir)
