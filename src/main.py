@@ -108,7 +108,7 @@ if __name__ == "__main__":
     urls_info = []
 
     pagination_sources_list: List[str] = ["propakistani", "theexpresstribune", "hum", "92news", "abbtakk"]
-    categories: List[str] = ["politics", "governance", "sports", "international relations", "business", "health", "science and technology", "culture", "security", "weather", "fashion", "energy", "others"]
+    categories: List[str] = ["politics", "governance", "sports", "international_relations", "business", "health", "science_and_technology", "culture", "security", "weather", "fashion", "energy", "others"]
     directories = ["raw_articles", "articles", "categories", "clusters", "summary"]
 
     for dir in directories:
