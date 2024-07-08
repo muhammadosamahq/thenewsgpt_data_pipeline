@@ -101,7 +101,7 @@ def get_url_meta_data(soup, object):
 
     return get_url_meta_data_list
 
-def article_processing(articles_meta_data, counter, yesterday_date, object, today_date):
+def article_processing(articles_meta_data, counter):
     newspaper_tool: Newspaper4k = Newspaper4k()
     for obj in articles_meta_data:
         print(obj["url"])

@@ -49,6 +49,7 @@ def cluster_chain():
                 ("human", "{input}")
             ]
         )
+    
 
     chain = prompt | llm
     return chain

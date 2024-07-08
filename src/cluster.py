@@ -76,6 +76,7 @@ def fetch_and_merge_json_files(directory: str) -> List[Dict[str, Union[str, int,
                     merged_data.append(data)
 
     return merged_data
+
 def sentance_transformers_embeddings(df: pd.DataFrame) -> np.ndarray:
     model: SentenceTransformer = SentenceTransformer('all-MiniLM-L6-v2')
     st: float = time.time()
@@ -121,7 +122,7 @@ def get_clustered_dataframe(all_articles_json_list: list[Dict[str, Union[str, in
     return df
 
 def get_clusters_list(df: pd.DataFrame, category: str, today_date: datetime) -> List[List[Dict[str, str]]]:
-    columns_to_keep: List[str] = ['id', 'datetime','title', 'authors', 'url', 'text_cleaned', "text"]
+    columns_to_keep: List[str] = ['id', 'datetime','title', 'authors', 'url', 'source', "text"]
     #rename_columns: Dict[str, str] = {'text_cleaned': 'text'}
 
     category_directory_path: str = f'.././data/pakistan/{today_date}/clusters/{category}'
